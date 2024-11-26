@@ -51,8 +51,10 @@ class ContentGenerator:
                     "content": prompts.get(content_type, prompts["educational"])
                 }]
             )
-            logger.info(f"Successfully generated tweet content: {message.content[:50]}...")
-            return message.content
+            # Extract just the text content from the message
+            content = message.content[0].text if isinstance(message.content, list) else message.content
+            logger.info(f"Successfully generated tweet content: {content[:50]}...")
+            return content
         except Exception as e:
             logger.error(f"Failed to generate content: {str(e)}")
             raise
