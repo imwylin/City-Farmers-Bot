@@ -47,7 +47,9 @@ class ContentGenerator:
                          Remember: You're not selling - you're evangelizing about a technological revolution 
                          in agriculture. Every tweet should feel like insider knowledge being leaked to the public.
 
-                         Additional requirement: Keep all tweets under 280 characters - use the full character limit.""",
+                         Additional requirement: Keep all tweets under 280 characters - use the full character limit.
+                         IMPORTANT: Your response must be a SINGLE tweet of exactly 280 characters or less.
+                         Do not include any other text, explanations, or formatting.""",
                 messages=[{
                     "role": "user",
                     "content": prompts.get(content_type, prompts["educational"])
@@ -75,9 +77,9 @@ class ContentGenerator:
     def _get_educational_prompt(self) -> str:
         """Rotate through different educational topics"""
         prompts = [
-            """Write a single tweet (max 280 chars) about the Bubble Tech greenhouse system.
+            """Write a single tweet (EXACTLY 280 chars or less) about the Bubble Tech greenhouse system.
             Focus on how bubble generators in the double-layer roof create dynamic temperature control.
-            One complete thought, no threads, no cliffhangers.""",
+            Return ONLY the tweet text, nothing else.""",
             
             """Write a single tweet (max 280 chars) about how Bubble Tech handles cooling and shading.
             Focus on the cloud-like cover of 6mm bubbles creating ideal growing conditions.
