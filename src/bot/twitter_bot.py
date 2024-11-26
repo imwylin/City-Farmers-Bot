@@ -39,51 +39,55 @@ class TwitterBot:
     async def post_tweet(self, content: str):
         """Post a tweet to Twitter"""
         try:
-            # Get stored tokens
             tokens = self.redis_handler.get_twitter_tokens("bot_user")
-            logger.info(f"Retrieved tokens from Redis: {tokens is not None}")
+            logger.info(f"Retrieved tokens from Redis: {tokens}")
+            logger.info(f"Token type: {type(tokens)}")  # Verify it's a dict
             
             if not tokens:
                 logger.error("No Twitter tokens found in Redis")
                 raise Exception("No Twitter tokens found")
             
-            # Try to post tweet
-            response = requests.post(
-                "https://api.x.com/2/tweets",
-                json={"text": content},
-                headers={
-                    "Authorization": f"Bearer {tokens['access_token']}",
-                    "Content-Type": "application/json",
-                }
-            )
+            # Log token details (safely)
+            logger.info("Token validation:")
+            logger.info(f"Has access_token: {'access_token' in tokens}")
+            logger.info(f"Has refresh_token: {'refresh_token' in tokens}")
+            logger.info(f"Access token starts with: {tokens.get('access_token', '')[:10]}...")
             
-            # If token expired, refresh and try again
-            if response.status_code == 401 and 'refresh_token' in tokens:
-                logger.info("Access token expired, attempting refresh...")
-                new_tokens = await self.refresh_token(tokens['refresh_token'])
-                
-                # Retry with new token
-                response = requests.post(
-                    "https://api.x.com/2/tweets",
-                    json={"text": content},
-                    headers={
-                        "Authorization": f"Bearer {new_tokens['access_token']}",
-                        "Content-Type": "application/json",
-                    }
-                )
+            # Construct and log full request details
+            url = "https://api.x.com/2/tweets"
+            payload = {"text": content}
+            headers = {
+                "Authorization": f"Bearer {tokens['access_token']}",
+                "Content-Type": "application/json",
+            }
             
-            logger.info(f"Twitter API response status: {response.status_code}")
-            logger.info(f"Twitter API response: {response.text}")
+            logger.info(f"Making request to: {url}")
+            logger.info(f"With payload: {payload}")
+            logger.info(f"Headers (sanitized): {{'Authorization': 'Bearer ...', 'Content-Type': {headers['Content-Type']}}}")
+            
+            response = requests.post(url, json=payload, headers=headers)
+            
+            logger.info("Response details:")
+            logger.info(f"Status code: {response.status_code}")
+            logger.info(f"Response headers: {dict(response.headers)}")
+            logger.info(f"Response body: {response.text}")
+            logger.info(f"Response content type: {response.headers.get('content-type')}")
             
             if response.status_code != 201:
                 logger.error(f"Twitter API error: {response.text}")
+                if response.status_code == 401:
+                    logger.info("Attempting token refresh...")
+                    if 'refresh_token' in tokens:
+                        new_tokens = await self.refresh_token(tokens['refresh_token'])
+                        return await self.post_tweet(content)
                 raise Exception(f"Failed to post tweet: {response.text}")
                 
             tweet_id = response.json()['data']['id']
             logger.info(f"Tweet posted successfully! ID: {tweet_id}")
-            logger.info(f"Tweet content: {content[:50]}...")
+            logger.info(f"Tweet URL: https://twitter.com/i/web/status/{tweet_id}")
             return tweet_id
             
         except Exception as e:
             logger.error(f"Failed to post tweet: {str(e)}")
+            logger.exception("Full traceback:")  # Log full traceback
             raise 
