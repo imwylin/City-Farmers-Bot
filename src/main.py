@@ -1,6 +1,7 @@
 from fastapi import FastAPI, BackgroundTasks
 from src.bot.twitter_bot import TwitterBot
 from src.bot.content_generator import ContentGenerator
+from src.utils.scheduler import TweetScheduler
 import logging
 from src.config.settings import get_settings
 
@@ -13,6 +14,12 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+# Initialize and start the scheduler
+scheduler = TweetScheduler()
+@app.on_event("startup")
+async def start_scheduler():
+    scheduler.start()
 
 @app.post("/post-tweet")
 async def create_tweet(background_tasks: BackgroundTasks, content_type: str = "educational"):

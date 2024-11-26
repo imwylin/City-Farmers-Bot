@@ -5,4 +5,5 @@ redis==5.0.1
 anthropic==0.18.1
 pydantic==2.6.1
 pydantic-settings==2.1.0
-python-dotenv==1.0.0 
+python-dotenv==1.0.0
+apscheduler==3.10.4 
