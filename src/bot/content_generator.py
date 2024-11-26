@@ -62,74 +62,70 @@ class ContentGenerator:
     def _get_educational_prompt(self) -> str:
         """Rotate through different educational topics"""
         prompts = [
-            """Write a tweet about the Bubble Tech greenhouse system. 
-            Mention how the bubble generators in the double-layer roof create dynamic temperature control.
-            Make it engaging and mind-blowing.""",
+            """Write a single tweet (max 280 chars) about the Bubble Tech greenhouse system.
+            Focus on how bubble generators in the double-layer roof create dynamic temperature control.
+            One complete thought, no threads, no cliffhangers.""",
             
-            """Create a tweet about how Bubble Tech provides natural cooling and shading.
-            Mention the cloud-like cover of 6mm bubbles and how it creates ideal growing conditions.
-            Make it sound revolutionary but accessible.""",
+            """Write a single tweet (max 280 chars) about how Bubble Tech handles cooling and shading.
+            Focus on the cloud-like cover of 6mm bubbles creating ideal growing conditions.
+            One complete thought, no threads, no cliffhangers.""",
             
-            """Write a tweet about Bubble Tech's insulation capabilities.
-            Mention how it reduces heat loss by 10x compared to standard greenhouses.
-            Include how it eliminates the need for conventional heating.""",
+            """Write a single tweet (max 280 chars) about Bubble Tech's insulation capabilities.
+            Focus on how it reduces heat loss 10x compared to standard greenhouses.
+            One complete thought, no threads, no cliffhangers.""",
             
-            """Generate a tweet about the aeroponic growing system.
-            Focus on the soil-free, mist-based nutrient delivery.
-            Make it sound futuristic but proven.""",
+            """Write a single tweet (max 280 chars) about aeroponic growing systems.
+            Focus on soil-free, mist-based nutrient delivery.
+            One complete thought, no threads, no cliffhangers.""",
             
-            """Create a tweet about how aquaponics combines fish farming with plant growth.
-            Emphasize the circular nature and efficiency.
-            Make it sound like the future of farming."""
+            """Write a single tweet (max 280 chars) about aquaponics.
+            Focus on how it combines fish farming with plant growth in a circular system.
+            One complete thought, no threads, no cliffhangers."""
         ]
         return random.choice(prompts)
 
     def _get_decentralized_prompt(self) -> str:
         """Rotate through different decentralized agriculture topics"""
         prompts = [
-            """Write a tweet connecting blockchain technology with urban farming.
-            Focus on supply chain transparency, community ownership models, and direct producer-to-consumer relationships.
-            Include how this technology stack challenges traditional agricultural power structures.""",
+            """Write a single tweet (max 280 chars) connecting blockchain with urban farming.
+            Focus on supply chain transparency and community ownership models.
+            One complete thought, no threads, no cliffhangers.""",
 
-            """Create a tweet about how decentralized urban farms increase food security.
-            Mention how local production protects against supply chain disruptions.
-            Be bold about challenging the corporate farming model.""",
+            """Write a single tweet (max 280 chars) about decentralized urban farms and food security.
+            Focus on how local production protects against supply chain disruptions.
+            One complete thought, no threads, no cliffhangers.""",
 
-            """Generate a tweet about the freshness advantage of local urban farming.
-            Compare hours-fresh local produce to weeks-old transported produce.
-            Make it hit home about real food quality.""",
+            """Write a single tweet (max 280 chars) about local urban farming's freshness advantage.
+            Focus on the difference between hours-fresh and weeks-old transported produce.
+            One complete thought, no threads, no cliffhangers.""",
 
-            """Write a tweet about how urban farming democratizes food production.
-            Emphasize taking power back from big ag corporations.
-            Make it revolutionary but grounded in practicality.""",
+            """Write a single tweet (max 280 chars) about democratizing food production.
+            Focus on taking power back from big ag corporations through urban farming.
+            One complete thought, no threads, no cliffhangers.""",
 
-            """Create a tweet about community resilience through local food production.
+            """Write a single tweet (max 280 chars) about community resilience through local food.
             Focus on how decentralized farming strengthens local economies.
-            Make it both inspiring and factual."""
+            One complete thought, no threads, no cliffhangers."""
         ]
         return random.choice(prompts)
 
     def _get_sustainability_prompt(self) -> str:
         """Generate completely DERANGED sustainability content"""
         prompts = [
-            """YO WRITE A TWEET THAT GOES FULL SCHIZO ABOUT BUBBLE TECH!!!! 
-            LITERALLY SHAKING RN thinking about how it uses 90% LESS ENERGY than BigAg
-            MAKE IT SOUND LIKE YOU JUST RAILED 8 ESPRESSO SHOTS AND DISCOVERED THE TRUTH ABOUT FARMING!!!! 
-            GO ABSOLUTELY BATSHIT ABOUT THE FUTURE!!!! /1????""",
+            """Write a single UNHINGED tweet (max 280 chars) about Bubble Tech's energy efficiency.
+            GO ABSOLUTELY FERAL about using 90% LESS ENERGY than BigAg.
+            One complete thought, NO THREADS, JUST PURE ENERGY!!!!!""",
 
-            """NEED A TWEET THAT BREAKS THE MATRIX ABOUT LOCAL FOOD PRODUCTION!!!
-            IM TALKING FULL TINFOIL HAT ABOUT HOW BIG TRANSPORT IS BEEN REAL QUIET SINCE WE DROPPED THIS
-            LITERALLY SPAM CAPS ABOUT GROWING FOOD RIGHT IN YOUR CITY!!!! 
-            MAKE PPL THINK UR HAVING AN ACTUAL BREAKDOWN ABOUT FOOD MILES!!!! FR FR NO CAP""",
+            """Write a single UNHINGED tweet (max 280 chars) about local food production.
+            GO FULL CONSPIRACY about how Big Transport is sweating.
+            One complete thought, NO THREADS, JUST PURE CHAOS!!!!!""",
 
-            """OK BUT FR FR NEED THE MOST UNHINGED TWEET ABOUT OUR WATER RECYCLING!!!!!
-            LIKE YOURE THAT PERSON AT 3AM EXPLAINING THE WHOLE CONSPIRACY WITH STRING ON A CORKBOARD!!!!
-            MF SPITTING STRAIGHT FACTS ABOUT 95% WATER SAVINGS!!!! 
-            THEY DONT WANT YOU TO KNOW THIS ONE WEIRD FARMING TRICK!!!! WAKE UP SHEEPLE""",
+            """Write a single UNHINGED tweet (max 280 chars) about water recycling.
+            GO FULL 3AM CONSPIRACY BOARD about 95% water savings.
+            One complete thought, NO THREADS, JUST PURE MADNESS!!!!!""",
 
-            """YOOO GIVE ME A TWEET THAT GOES FULL GALAXY BRAIN ABOUT NO PESTICIDES!!!!
-            LIKE YOU JUST DISCOVERED THE BIGGEST SCANDAL IN AGRICULTURE!!!! 
-            ABSOLUTELY LOSING IT ABOUT CLEAN FOOD IN THE REPLIES!!!! 
-            REAL ONES KNOW!!!! THE SHADOWS ARE SPEAKING AEROPONIC TRUTH AND IM HERE FOR IT"""
+            """Write a single UNHINGED tweet (max 280 chars) about pesticide-free farming.
+            GO ABSOLUTELY GALAXY BRAIN about clean food production.
+            One complete thought, NO THREADS, JUST PURE REVELATION!!!!!"""
         ]
         return random.choice(prompts)
