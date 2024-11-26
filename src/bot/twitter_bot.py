@@ -15,13 +15,14 @@ class TwitterBot:
         try:
             # Get stored tokens
             tokens = self.redis_handler.get_twitter_tokens("bot_user")
-            logger.info("Retrieved Twitter tokens from Redis")
+            logger.info(f"Retrieved tokens from Redis: {tokens is not None}")
             
             if not tokens:
                 logger.error("No Twitter tokens found in Redis")
                 raise Exception("No Twitter tokens found")
             
             # Post tweet
+            logger.info(f"Attempting to post tweet with content: {content[:50]}...")
             response = requests.post(
                 "https://api.x.com/2/tweets",
                 json={"text": content},
@@ -30,6 +31,9 @@ class TwitterBot:
                     "Content-Type": "application/json",
                 }
             )
+            
+            logger.info(f"Twitter API response status: {response.status_code}")
+            logger.info(f"Twitter API response: {response.text}")
             
             if response.status_code != 201:
                 logger.error(f"Twitter API error: {response.text}")
