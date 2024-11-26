@@ -29,4 +29,22 @@ class RedisHandler:
             return json.loads(tokens) if tokens else None
         except Exception as e:
             logger.error(f"Failed to retrieve Twitter tokens: {str(e)}")
-            raise 
+            raise
+    
+    def verify_connection(self):
+        """Verify Redis connection and token existence"""
+        try:
+            # Test connection
+            self.redis_client.ping()
+            
+            # Check for tokens
+            tokens = self.get_twitter_tokens("bot_user")
+            if not tokens:
+                logger.error("No Twitter tokens found in Redis")
+                return False
+                
+            logger.info("Redis connection verified and tokens found")
+            return True
+        except Exception as e:
+            logger.error(f"Redis verification failed: {str(e)}")
+            return False
