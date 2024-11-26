@@ -63,12 +63,13 @@ class ContentGenerator:
             content = content.replace('\n', ' ')  # Remove line breaks
             content = content.replace('"', "'")  # Replace double quotes with single
             
-            # Enforce character limit
+            # Only truncate if we're actually over the limit
             if len(content) > 280:
+                logger.warning(f"Content exceeded limit ({len(content)} chars), truncating...")
                 content = content[:277] + "..."
-                
+            
             logger.info(f"Generated tweet length: {len(content)} chars")
-            logger.info(f"Final tweet content: {content}")  # Log the final content
+            logger.info(f"Final tweet content: {content}")
             return content
         except Exception as e:
             logger.error(f"Failed to generate content: {str(e)}")
