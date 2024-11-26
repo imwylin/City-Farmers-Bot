@@ -26,7 +26,12 @@ class RedisHandler:
         """Retrieve Twitter OAuth tokens from Redis"""
         try:
             tokens = self.redis_client.get(f"twitter_tokens:{user_id}")
-            return json.loads(tokens) if tokens else None
+            if tokens:
+                # Parse the JSON string into a dictionary
+                if isinstance(tokens, str):
+                    return json.loads(tokens)
+                return json.loads(tokens.decode('utf-8'))
+            return None
         except Exception as e:
             logger.error(f"Failed to retrieve Twitter tokens: {str(e)}")
             raise

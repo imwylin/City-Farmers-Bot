@@ -2,6 +2,7 @@ import requests
 from src.config.settings import get_settings
 from src.utils.redis_handler import RedisHandler
 import logging
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -41,17 +42,19 @@ class TwitterBot:
         try:
             tokens = self.redis_handler.get_twitter_tokens("bot_user")
             logger.info(f"Retrieved tokens from Redis: {tokens}")
-            logger.info(f"Token type: {type(tokens)}")  # Verify it's a dict
             
             if not tokens:
                 logger.error("No Twitter tokens found in Redis")
                 raise Exception("No Twitter tokens found")
             
+            if isinstance(tokens, str):
+                tokens = json.loads(tokens)
+            
             # Log token details (safely)
             logger.info("Token validation:")
             logger.info(f"Has access_token: {'access_token' in tokens}")
             logger.info(f"Has refresh_token: {'refresh_token' in tokens}")
-            logger.info(f"Access token starts with: {tokens.get('access_token', '')[:10]}...")
+            logger.info(f"Access token type: {type(tokens.get('access_token', ''))}")
             
             # Construct and log full request details
             url = "https://api.x.com/2/tweets"

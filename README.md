@@ -39,6 +39,37 @@ cp .env.example .env
 uvicorn src.main:app --reload
 ```
 
+## X/Twitter API Setup
+
+1. In Twitter Developer Portal:
+   - Enable OAuth 2.0
+   - Set App type to "Web App"
+   - Add callback URL: `https://your-domain.com/oauth/callback`
+   - Verify required scopes are enabled:
+     - tweet.read
+     - tweet.write
+     - users.read
+     - offline.access
+
+2. Configure environment variables:
+```
+CLIENT_ID=your_client_id
+CLIENT_SECRET=your_client_secret
+REDIRECT_URI=https://your-domain.com/oauth/callback
+```
+
+3. Verify API connection:
+    ```bash
+    # Check system health
+    curl https://your-domain.com/health
+
+    # If tokens need reset
+    curl -X POST https://your-domain.com/reset-auth
+
+    # Visit to authenticate
+    https://your-domain.com/auth/twitter
+    ```
+
 ## API Endpoints
 
 ### Authentication
