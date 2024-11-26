@@ -1,4 +1,4 @@
-from fastapi import FastAPI, BackgroundTasks, HTTPException, Request
+from fastapi import FastAPI, BackgroundTasks, HTTPException, Request, Query
 from fastapi.responses import RedirectResponse
 from src.bot.twitter_bot import TwitterBot
 from src.bot.content_generator import ContentGenerator
@@ -112,7 +112,10 @@ async def twitter_auth():
     return RedirectResponse(authorization_url)
 
 @app.get("/oauth/callback")
-async def twitter_callback(code: str, state: str):
+async def twitter_callback(
+    code: str = Query(..., description="Authorization code from Twitter"),
+    state: str = Query(..., description="State parameter for CSRF protection")
+):
     """Handle OAuth callback"""
     try:
         credentials = await get_pkce_credentials()
