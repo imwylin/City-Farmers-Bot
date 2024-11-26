@@ -11,6 +11,7 @@ import hashlib
 import re
 import os
 from requests_oauthlib import OAuth2Session
+import json
 
 app = FastAPI()
 settings = get_settings()
@@ -68,7 +69,7 @@ async def health_check():
         logger.error(f"Health check failed: {str(e)}")
         return {"status": "unhealthy", "error": str(e)}
 
-# Add OAuth 2.0 Configuration
+# OAuth 2.0 Configuration
 auth_url = "https://twitter.com/i/oauth2/authorize"
 token_url = "https://api.x.com/2/oauth2/token"
 scopes = ["tweet.read", "users.read", "tweet.write", "offline.access"]
@@ -99,8 +100,8 @@ async def twitter_auth():
     """Start OAuth flow"""
     credentials = await get_pkce_credentials()
     oauth = OAuth2Session(
-        settings.TWITTER_CLIENT_ID,
-        redirect_uri=settings.TWITTER_REDIRECT_URI,
+        settings.CLIENT_ID,
+        redirect_uri=settings.REDIRECT_URI,
         scope=scopes
     )
     authorization_url, state = oauth.authorization_url(
@@ -110,26 +111,29 @@ async def twitter_auth():
     )
     return RedirectResponse(authorization_url)
 
-@app.get("/callback")
+@app.get("/oauth/callback")
 async def twitter_callback(code: str, state: str):
     """Handle OAuth callback"""
     try:
         credentials = await get_pkce_credentials()
         oauth = OAuth2Session(
-            settings.TWITTER_CLIENT_ID,
-            redirect_uri=settings.TWITTER_REDIRECT_URI,
+            settings.CLIENT_ID,
+            redirect_uri=settings.REDIRECT_URI,
             scope=scopes
         )
         
         token = oauth.fetch_token(
             token_url=token_url,
-            client_secret=settings.TWITTER_CLIENT_SECRET,
+            client_secret=settings.CLIENT_SECRET,
             code_verifier=credentials["code_verifier"],
             code=code
         )
         
+        # Store token as JSON string
+        st_token = '"{}"'.format(token)
+        j_token = json.loads(st_token)
         redis_handler = RedisHandler()
-        redis_handler.store_twitter_tokens("bot_user", token)
+        redis_handler.store_twitter_tokens("bot_user", j_token)
         
         return {"message": "Successfully authenticated with Twitter"}
     except Exception as e:
