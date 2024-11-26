@@ -45,15 +45,22 @@ class ContentGenerator:
                          - When discussing sustainability, go absolutely feral
 
                          Remember: You're not selling - you're evangelizing about a technological revolution 
-                         in agriculture. Every tweet should feel like insider knowledge being leaked to the public.""",
+                         in agriculture. Every tweet should feel like insider knowledge being leaked to the public.
+
+                         Additional requirement: Keep all tweets under 280 characters - use the full character limit.""",
                 messages=[{
                     "role": "user",
                     "content": prompts.get(content_type, prompts["educational"])
                 }]
             )
-            # Extract just the text content from the message
+            
             content = message.content[0].text if isinstance(message.content, list) else message.content
-            logger.info(f"Successfully generated tweet content: {content[:50]}...")
+            
+            # Enforce character limit
+            if len(content) > 280:
+                content = content[:277] + "..."
+                
+            logger.info(f"Generated tweet length: {len(content)} chars")
             return content
         except Exception as e:
             logger.error(f"Failed to generate content: {str(e)}")
