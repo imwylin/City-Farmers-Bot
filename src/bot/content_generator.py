@@ -113,27 +113,31 @@ class ContentGenerator:
         return random.choice(prompts)
 
     def _get_shitposting_prompt(self) -> str:
-        """Elite agricultural truth bombs"""
+        """Agricultural psychological warfare"""
         prompts = [
-            "just ran the numbers again. 90% energy reduction vs traditional greenhouse systems. BigAg real quiet rn",
+            "saw the latest bubble tech yield data and had to lay down for a minute",
+            
+            "nobody:\n"
+            "absolutely nobody:\n"
+            "bubble tech: achieving perpetual energy balance through PHYSICS",
+            
+            "remember when they said vertical farms couldn't feed cities lmao yield data attached [REDACTED BY LEGAL]",
 
-            "imagine building your whole business model on 1500-mile supply chains when local vertical farms exist",
+            "corporate farming handbooks be like 'step 1: spray poison step 2: ask questions later' while we're over here",
+            
+            "POV: you're big ag watching our water consumption metrics drop for the 8th straight quarter",
+            
+            "putting pesticide manufacturers on suicide watch with *checks notes* basic physics and computer science",
+            
+            "writing_academic_papers.exe has stopped working. uploading yield data directly to timeline",
+            
+            "when the sensor network starts speaking in tongues but the yields keep climbing",
+            
+            "mfs will literally ship lettuce 2000 miles instead of learning about aeroponic nutrient delivery",
 
-            "3am realization: our water recycling metrics are actually classified information at this point",
-
-            "the real yield data is hidden in the nutrient mist particle size optimization curves fr fr",
-            
-            "local food production is cool but have you tried local food production that scales exponentially",
-            
-            "crazy how bubble tech does more with physics than big ag does with chemicals",
-            
-            "they keep asking how we beat their yields without pesticides. my brother in christ, that's the whole point",
-            
-            "traditional greenhouse control systems looking real legacy after these sensor network results dropped",
-            
-            "accidentally wrote an essay on aeroponic root development but twitter gets the classified version",
-            
-            "the real decentralization was the farming innovations we made along the way (it's the yields)"
+            "local farms handbooks be like:\n"
+            "page 1: here's the login for the monitoring system\n"
+            "page 2: there is no page 2"
         ]
         return random.choice(prompts)
 
@@ -146,14 +150,23 @@ class ContentGenerator:
             "A tweet from",
             "From the perspective of",
             "Writing as",
-            "Speaking as"
+            "Speaking as",
+            "Here's an on-brand",
+            "Here is an on-brand",
+            "An on-brand",
+            "Here's some",
+            "Here is some",
+            "Posting as",
+            "Tweeting as",
+            "As the tech farmer",
+            "As an agricultural"
         ]
         
         cleaned_content = content
         for prefix in prefixes:
             if cleaned_content.lower().startswith(prefix.lower()):
                 # Find the first occurrence of ": " or similar after the prefix
-                split_markers = [": ", " - ", ":\n", ".\n", ". "]
+                split_markers = [": ", " - ", ":\n", ".\n", ". ", "tweet: ", "post: "]
                 for marker in split_markers:
                     if marker in cleaned_content:
                         cleaned_content = cleaned_content.split(marker, 1)[1].strip()
