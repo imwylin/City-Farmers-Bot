@@ -2,35 +2,10 @@
 
 A Twitter marketing bot for City Farmers, an innovative urban farming company. The bot generates and posts engaging content about aeroponic farming, greenhouse innovation, and franchise opportunities.
 
-## Project Structure
-```
-city_farmers_bot/
-├── .env.example
-├── .gitignore
-├── requirements.txt
-├── README.md
-├── src/
-│   ├── __init__.py
-│   ├── main.py
-│   ├── bot/
-│   │   ├── __init__.py
-│   │   ├── twitter_bot.py
-│   │   └── content_generator.py
-│   ├── config/
-│   │   ├── __init__.py
-│   │   └── settings.py
-│   └── utils/
-│       ├── __init__.py
-│       ├── redis_handler.py
-│       └── logger.py
-└── tests/
-    └── __init__.py
-```
-
 ## Features
 
 - Automated tweet generation using Claude AI
-- Twitter integration with OAuth 2.0
+- Twitter OAuth 2.0 with PKCE
 - Redis-based token storage
 - Background task processing
 - Error handling and logging
@@ -64,48 +39,30 @@ cp .env.example .env
 uvicorn src.main:app --reload
 ```
 
-## Environment Variables
+## Authentication
 
-Required environment variables in `.env`:
-```
-TWITTER_CLIENT_ID=your_twitter_client_id
-TWITTER_CLIENT_SECRET=your_twitter_client_secret
-TWITTER_REDIRECT_URI=https://city-farmers-bot.onrender.com/callback
-ANTHROPIC_API_KEY=your_anthropic_api_key
-REDIS_URL=your_redis_url
-LOG_LEVEL=INFO
-ENVIRONMENT=production
-```
+1. Visit `/auth/twitter` to start OAuth flow
+2. Authorize the application with your Twitter account
+3. Tokens will be automatically stored in Redis
+4. Check `/health` to verify connection status
 
 ## API Endpoints
 
-### POST /post-tweet
-Generate and post a tweet
-
-**Query Parameters:**
-- `content_type` (optional): Type of content to generate
-  - `educational` (default): Aeroponic farming innovation
-  - `franchise`: Franchise opportunities
-  - `sustainability`: Sustainable urban farming
-
-**Response:**
-```json
-{
-    "status": "Tweet generation initiated",
-    "content": "Generated tweet content"
-}
-```
+- `GET /auth/twitter`: Start Twitter OAuth flow
+- `GET /callback`: OAuth callback handler
+- `POST /post-tweet`: Generate and post a tweet
+  - Query Parameters:
+    - `content_type`: Type of content to generate (educational, decentralized, sustainability)
+- `GET /health`: Check system health status
 
 ## Deployment
 
-The application is configured for deployment on Render.com:
+The application is configured for deployment on Render.com. Set up the following:
 
-1. Set up a Redis instance on Render
-2. Create a Web Service:
-   - Build Command: `pip install -r requirements.txt`
-   - Start Command: `uvicorn src.main:app --host 0.0.0.0 --port $PORT`
-3. Configure environment variables in Render dashboard
-4. Set up a cron job to hit `/post-tweet` at desired intervals
+1. Redis instance on Render
+2. Web Service pointing to main.py
+3. Environment variables in Render dashboard
+4. Scheduled task for automated posting
 
 ## License
 

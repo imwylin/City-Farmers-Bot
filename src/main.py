@@ -6,7 +6,11 @@ from src.utils.scheduler import TweetScheduler
 from src.utils.redis_handler import RedisHandler
 import logging
 from src.config.settings import get_settings
-import tweepy
+import base64
+import hashlib
+import re
+import os
+from requests_oauthlib import OAuth2Session
 
 app = FastAPI()
 settings = get_settings()
@@ -56,7 +60,8 @@ async def health_check():
         
         # Test Twitter client
         twitter_bot = TwitterBot()
-        twitter_status = bool(twitter_bot.client)
+        tokens = twitter_bot.redis_handler.get_twitter_tokens("bot_user")
+        twitter_status = bool(tokens)
         
         return {
             "status": "healthy" if redis_status and twitter_status else "unhealthy",
@@ -67,34 +72,54 @@ async def health_check():
         logger.error(f"Health check failed: {str(e)}")
         return {"status": "unhealthy", "error": str(e)}
 
-@app.get("/login/twitter")
-async def twitter_login():
-    """Start Twitter OAuth flow"""
-    oauth2_user_handler = tweepy.OAuth2UserHandler(
-        client_id=settings.TWITTER_CLIENT_ID,
-        client_secret=settings.TWITTER_CLIENT_SECRET,
+# Add OAuth 2.0 Configuration
+auth_url = "https://twitter.com/i/oauth2/authorize"
+token_url = "https://api.x.com/2/oauth2/token"
+scopes = ["tweet.read", "users.read", "tweet.write", "offline.access"]
+
+# PKCE Setup
+code_verifier = base64.urlsafe_b64encode(os.urandom(30)).decode("utf-8")
+code_verifier = re.sub("[^a-zA-Z0-9]+", "", code_verifier)
+code_challenge = hashlib.sha256(code_verifier.encode("utf-8")).digest()
+code_challenge = base64.urlsafe_b64encode(code_challenge).decode("utf-8")
+code_challenge = code_challenge.replace("=", "")
+
+@app.get("/auth/twitter")
+async def twitter_auth():
+    """Start OAuth flow"""
+    oauth = OAuth2Session(
+        settings.TWITTER_CLIENT_ID,
         redirect_uri=settings.TWITTER_REDIRECT_URI,
-        scope=["tweet.read", "tweet.write", "users.read"]
+        scope=scopes
     )
-    return RedirectResponse(oauth2_user_handler.get_authorization_url())
+    authorization_url, state = oauth.authorization_url(
+        auth_url,
+        code_challenge=code_challenge,
+        code_challenge_method="S256"
+    )
+    return RedirectResponse(authorization_url)
 
 @app.get("/callback")
 async def twitter_callback(code: str, state: str):
     """Handle Twitter OAuth callback"""
     try:
-        oauth2_user_handler = tweepy.OAuth2UserHandler(
-            client_id=settings.TWITTER_CLIENT_ID,
-            client_secret=settings.TWITTER_CLIENT_SECRET,
+        oauth = OAuth2Session(
+            settings.TWITTER_CLIENT_ID,
             redirect_uri=settings.TWITTER_REDIRECT_URI,
-            scope=["tweet.read", "tweet.write", "users.read"]
+            scope=scopes
         )
         
         # Get access token
-        access_token = oauth2_user_handler.fetch_token(code)
+        token = oauth.fetch_token(
+            token_url=token_url,
+            client_secret=settings.TWITTER_CLIENT_SECRET,
+            code_verifier=code_verifier,
+            code=code
+        )
         
         # Store in Redis
         redis_handler = RedisHandler()
-        redis_handler.store_twitter_tokens("bot_user", access_token)
+        redis_handler.store_twitter_tokens("bot_user", token)
         
         return {"message": "Successfully authenticated with Twitter"}
     except Exception as e:

@@ -5,7 +5,7 @@ city_farmers_bot/
 ├── README.md
 ├── src/
 │   ├── __init__.py
-│   ├── main.py
+│   ├── app.py
 │   ├── bot/
 │   │   ├── __init__.py
 │   │   ├── twitter_bot.py
