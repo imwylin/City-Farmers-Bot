@@ -25,11 +25,32 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Initialize and start the scheduler
+# Initialize scheduler at module level
 scheduler = TweetScheduler()
+
 @app.on_event("startup")
 async def start_scheduler():
-    scheduler.start()
+    """Start the scheduler when the app starts"""
+    try:
+        scheduler.start()
+        logger.info("Scheduler started successfully on app startup")
+    except Exception as e:
+        logger.error(f"Failed to start scheduler: {str(e)}")
+        raise
+
+@app.on_event("shutdown")
+async def shutdown_scheduler():
+    """Shutdown the scheduler gracefully"""
+    try:
+        scheduler.scheduler.shutdown()
+        logger.info("Scheduler shut down successfully")
+    except Exception as e:
+        logger.error(f"Error shutting down scheduler: {str(e)}")
+
+# Add a root endpoint to prevent 404s
+@app.get("/")
+async def root():
+    return {"status": "running", "message": "City Farmers Bot API"}
 
 @app.post("/post-tweet")
 async def create_tweet(background_tasks: BackgroundTasks, content_type: str = "educational"):
