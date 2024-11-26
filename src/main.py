@@ -1,10 +1,12 @@
-from fastapi import FastAPI, BackgroundTasks, HTTPException
+from fastapi import FastAPI, BackgroundTasks, HTTPException, Request
+from fastapi.responses import RedirectResponse
 from src.bot.twitter_bot import TwitterBot
 from src.bot.content_generator import ContentGenerator
 from src.utils.scheduler import TweetScheduler
 from src.utils.redis_handler import RedisHandler
 import logging
 from src.config.settings import get_settings
+import tweepy
 
 app = FastAPI()
 settings = get_settings()
@@ -64,3 +66,37 @@ async def health_check():
     except Exception as e:
         logger.error(f"Health check failed: {str(e)}")
         return {"status": "unhealthy", "error": str(e)}
+
+@app.get("/login/twitter")
+async def twitter_login():
+    """Start Twitter OAuth flow"""
+    oauth2_user_handler = tweepy.OAuth2UserHandler(
+        client_id=settings.TWITTER_CLIENT_ID,
+        client_secret=settings.TWITTER_CLIENT_SECRET,
+        redirect_uri=settings.TWITTER_REDIRECT_URI,
+        scope=["tweet.read", "tweet.write", "users.read"]
+    )
+    return RedirectResponse(oauth2_user_handler.get_authorization_url())
+
+@app.get("/callback")
+async def twitter_callback(code: str, state: str):
+    """Handle Twitter OAuth callback"""
+    try:
+        oauth2_user_handler = tweepy.OAuth2UserHandler(
+            client_id=settings.TWITTER_CLIENT_ID,
+            client_secret=settings.TWITTER_CLIENT_SECRET,
+            redirect_uri=settings.TWITTER_REDIRECT_URI,
+            scope=["tweet.read", "tweet.write", "users.read"]
+        )
+        
+        # Get access token
+        access_token = oauth2_user_handler.fetch_token(code)
+        
+        # Store in Redis
+        redis_handler = RedisHandler()
+        redis_handler.store_twitter_tokens("bot_user", access_token)
+        
+        return {"message": "Successfully authenticated with Twitter"}
+    except Exception as e:
+        logger.error(f"Failed to handle Twitter callback: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
