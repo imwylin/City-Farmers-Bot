@@ -12,6 +12,8 @@ import re
 import os
 from requests_oauthlib import OAuth2Session
 import json
+import datetime
+import random
 
 app = FastAPI()
 settings = get_settings()
@@ -156,7 +158,9 @@ async def test_tweet():
     """Post a simple test tweet"""
     try:
         twitter_bot = TwitterBot()
-        content = "Test tweet from City Farmers Bot - checking API connectivity"
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        test_id = ''.join(random.choices('0123456789', k=4))  # Random 4-digit number
+        content = f"Test tweet {test_id} from City Farmers Bot - checking API connectivity at {timestamp}"
         
         logger.info("Attempting to post test tweet")
         tweet_id = await twitter_bot.post_tweet(content)
