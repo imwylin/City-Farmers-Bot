@@ -47,9 +47,6 @@ class TwitterBot:
                 logger.error("No Twitter tokens found in Redis")
                 raise Exception("No Twitter tokens found")
             
-            if isinstance(tokens, str):
-                tokens = json.loads(tokens)
-            
             # Log token details (safely)
             logger.info("Token validation:")
             logger.info(f"Has access_token: {'access_token' in tokens}")
