@@ -73,16 +73,31 @@ auth_url = "https://twitter.com/i/oauth2/authorize"
 token_url = "https://api.x.com/2/oauth2/token"
 scopes = ["tweet.read", "users.read", "tweet.write", "offline.access"]
 
-# PKCE Setup
-code_verifier = base64.urlsafe_b64encode(os.urandom(30)).decode("utf-8")
-code_verifier = re.sub("[^a-zA-Z0-9]+", "", code_verifier)
-code_challenge = hashlib.sha256(code_verifier.encode("utf-8")).digest()
-code_challenge = base64.urlsafe_b64encode(code_challenge).decode("utf-8")
-code_challenge = code_challenge.replace("=", "")
+# Replace the runtime PKCE setup with a Redis-based one
+async def get_pkce_credentials():
+    redis_handler = RedisHandler()
+    credentials = redis_handler.get_pkce_credentials()
+    
+    if not credentials:
+        # Generate new credentials if none exist
+        code_verifier = base64.urlsafe_b64encode(os.urandom(30)).decode("utf-8")
+        code_verifier = re.sub("[^a-zA-Z0-9]+", "", code_verifier)
+        code_challenge = hashlib.sha256(code_verifier.encode("utf-8")).digest()
+        code_challenge = base64.urlsafe_b64encode(code_challenge).decode("utf-8")
+        code_challenge = code_challenge.replace("=", "")
+        
+        credentials = {
+            "code_verifier": code_verifier,
+            "code_challenge": code_challenge
+        }
+        redis_handler.store_pkce_credentials(credentials)
+    
+    return credentials
 
 @app.get("/auth/twitter")
 async def twitter_auth():
     """Start OAuth flow"""
+    credentials = await get_pkce_credentials()
     oauth = OAuth2Session(
         settings.TWITTER_CLIENT_ID,
         redirect_uri=settings.TWITTER_REDIRECT_URI,
@@ -90,30 +105,29 @@ async def twitter_auth():
     )
     authorization_url, state = oauth.authorization_url(
         auth_url,
-        code_challenge=code_challenge,
+        code_challenge=credentials["code_challenge"],
         code_challenge_method="S256"
     )
     return RedirectResponse(authorization_url)
 
 @app.get("/callback")
 async def twitter_callback(code: str, state: str):
-    """Handle Twitter OAuth callback"""
+    """Handle OAuth callback"""
     try:
+        credentials = await get_pkce_credentials()
         oauth = OAuth2Session(
             settings.TWITTER_CLIENT_ID,
             redirect_uri=settings.TWITTER_REDIRECT_URI,
             scope=scopes
         )
         
-        # Get access token
         token = oauth.fetch_token(
             token_url=token_url,
             client_secret=settings.TWITTER_CLIENT_SECRET,
-            code_verifier=code_verifier,
+            code_verifier=credentials["code_verifier"],
             code=code
         )
         
-        # Store in Redis
         redis_handler = RedisHandler()
         redis_handler.store_twitter_tokens("bot_user", token)
         

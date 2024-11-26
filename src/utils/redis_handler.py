@@ -48,3 +48,20 @@ class RedisHandler:
             return bool(tokens)
         except Exception:
             return False
+    
+    def store_pkce_credentials(self, credentials: dict):
+        """Store PKCE credentials in Redis"""
+        try:
+            self.redis_client.set("pkce_credentials", json.dumps(credentials))
+        except Exception as e:
+            logger.error(f"Failed to store PKCE credentials: {str(e)}")
+            raise
+    
+    def get_pkce_credentials(self) -> dict:
+        """Retrieve PKCE credentials from Redis"""
+        try:
+            credentials = self.redis_client.get("pkce_credentials")
+            return json.loads(credentials) if credentials else None
+        except Exception as e:
+            logger.error(f"Failed to retrieve PKCE credentials: {str(e)}")
+            raise
