@@ -56,17 +56,13 @@ async def health_check():
     try:
         # Test Redis
         redis_handler = RedisHandler()
-        redis_status = redis_handler.verify_connection()
-        
-        # Test Twitter client
-        twitter_bot = TwitterBot()
-        tokens = twitter_bot.redis_handler.get_twitter_tokens("bot_user")
-        twitter_status = bool(tokens)
+        redis_connected = redis_handler.verify_connection()
+        has_tokens = redis_handler.has_tokens() if redis_connected else False
         
         return {
-            "status": "healthy" if redis_status and twitter_status else "unhealthy",
-            "redis_connected": redis_status,
-            "twitter_configured": twitter_status
+            "status": "healthy" if redis_connected and has_tokens else "unhealthy",
+            "redis_connected": redis_connected,
+            "has_tokens": has_tokens
         }
     except Exception as e:
         logger.error(f"Health check failed: {str(e)}")

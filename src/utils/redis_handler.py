@@ -32,19 +32,19 @@ class RedisHandler:
             raise
     
     def verify_connection(self):
-        """Verify Redis connection and token existence"""
+        """Verify Redis connection"""
         try:
-            # Test connection
             self.redis_client.ping()
-            
-            # Check for tokens
-            tokens = self.get_twitter_tokens("bot_user")
-            if not tokens:
-                logger.error("No Twitter tokens found in Redis")
-                return False
-                
-            logger.info("Redis connection verified and tokens found")
+            logger.info("Redis connection verified")
             return True
         except Exception as e:
             logger.error(f"Redis verification failed: {str(e)}")
+            return False
+    
+    def has_tokens(self):
+        """Check if tokens exist"""
+        try:
+            tokens = self.get_twitter_tokens("bot_user")
+            return bool(tokens)
+        except Exception:
             return False
