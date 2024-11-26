@@ -17,7 +17,7 @@ class ContentGenerator:
             prompts = {
                 "educational": self._get_educational_prompt(),
                 "decentralized": self._get_decentralized_prompt(),
-                "sustainability": self._get_sustainability_prompt()
+                "shitposting": self._get_shitposting_prompt()
             }
             
             message = self.client.messages.create(
@@ -75,72 +75,64 @@ class ContentGenerator:
             raise
 
     def _get_educational_prompt(self) -> str:
-        """Rotate through different educational topics"""
+        """Core tech and business model topics"""
         prompts = [
-            """Write a single tweet (EXACTLY 280 chars or less) about the Bubble Tech greenhouse system.
-            Focus on how bubble generators in the double-layer roof create dynamic temperature control.
-            Return ONLY the tweet text, nothing else.""",
+            "Bubble Tech's full stack: bubble roof insulation/cooling, aeroponics, and yield data.",
             
-            """Write a single tweet (max 280 chars) about how Bubble Tech handles cooling and shading.
-            Focus on the cloud-like cover of 6mm bubbles creating ideal growing conditions.
-            One complete thought, no threads, no cliffhangers.""",
+            "Microclimate optimization: sensor networks + machine learning = perfect plant conditions.",
             
-            """Write a single tweet (max 280 chars) about Bubble Tech's insulation capabilities.
-            Focus on how it reduces heat loss 10x compared to standard greenhouses.
-            One complete thought, no threads, no cliffhangers.""",
+            "Vertical integration: fish waste → plant nutrients → premium produce → local markets.",
             
-            """Write a single tweet (max 280 chars) about aeroponic growing systems.
-            Focus on soil-free, mist-based nutrient delivery.
-            One complete thought, no threads, no cliffhangers.""",
+            "Hardware/software stack that lets anyone run commercial-grade grows.",
             
-            """Write a single tweet (max 280 chars) about aquaponics.
-            Focus on how it combines fish farming with plant growth in a circular system.
-            One complete thought, no threads, no cliffhangers."""
+            "Real-time monitoring system: from pH levels to profit margins.",
+            
+            "Nutrient film dynamics in aeroponic systems vs traditional hydro.",
+            
+            "Zero latency agriculture: harvest to table in under 3 hours.",
+            
+            "Greenhouse automation: from seedling to sale without touching grass."
         ]
         return random.choice(prompts)
 
     def _get_decentralized_prompt(self) -> str:
-        """Rotate through different decentralized agriculture topics"""
+        """Web3 meets AgTech topics"""
         prompts = [
-            """Write a single tweet (max 280 chars) connecting blockchain with urban farming.
-            Focus on supply chain transparency and community ownership models.
-            One complete thought, no threads, no cliffhangers.""",
+            "Smart contracts tracking farm-to-table with zero trust needed.",
 
-            """Write a single tweet (max 280 chars) about decentralized urban farms and food security.
-            Focus on how local production protects against supply chain disruptions.
-            One complete thought, no threads, no cliffhangers.""",
+            "Tokenized greenhouse ownership: community governed, chain verified.",
 
-            """Write a single tweet (max 280 chars) about local urban farming's freshness advantage.
-            Focus on the difference between hours-fresh and weeks-old transported produce.
-            One complete thought, no threads, no cliffhangers.""",
+            "P2P produce markets secured by blockchain, powered by proximity.",
 
-            """Write a single tweet (max 280 chars) about democratizing food production.
-            Focus on taking power back from big ag corporations through urban farming.
-            One complete thought, no threads, no cliffhangers.""",
+            "DAOs running vertical farms. Future's looking pretty decentralized.",
 
-            """Write a single tweet (max 280 chars) about community resilience through local food.
-            Focus on how decentralized farming strengthens local economies.
-            One complete thought, no threads, no cliffhangers."""
+            "Local food sovereignty backed by distributed ledger tech.",
+            
+            "Franchise model + blockchain: transparent scaling without the middlemen."
         ]
         return random.choice(prompts)
 
-    def _get_sustainability_prompt(self) -> str:
-        """Generate completely DERANGED sustainability content"""
+    def _get_shitposting_prompt(self) -> str:
+        """Elite agricultural truth bombs"""
         prompts = [
-            """Write a single UNHINGED tweet (max 280 chars) about Bubble Tech's energy efficiency.
-            GO ABSOLUTELY FERAL about using 90% LESS ENERGY than BigAg.
-            One complete thought, NO THREADS, JUST PURE ENERGY!!!!!""",
+            "just ran the numbers again. 90% energy reduction vs traditional greenhouse systems. BigAg real quiet rn",
 
-            """Write a single UNHINGED tweet (max 280 chars) about local food production.
-            GO FULL CONSPIRACY about how Big Transport is sweating.
-            One complete thought, NO THREADS, JUST PURE CHAOS!!!!!""",
+            "imagine building your whole business model on 1500-mile supply chains when local vertical farms exist",
 
-            """Write a single UNHINGED tweet (max 280 chars) about water recycling.
-            GO FULL 3AM CONSPIRACY BOARD about 95% water savings.
-            One complete thought, NO THREADS, JUST PURE MADNESS!!!!!""",
+            "3am realization: our water recycling metrics are actually classified information at this point",
 
-            """Write a single UNHINGED tweet (max 280 chars) about pesticide-free farming.
-            GO ABSOLUTELY GALAXY BRAIN about clean food production.
-            One complete thought, NO THREADS, JUST PURE REVELATION!!!!!"""
+            "the real yield data is hidden in the nutrient mist particle size optimization curves fr fr",
+            
+            "local food production is cool but have you tried local food production that scales exponentially",
+            
+            "crazy how bubble tech does more with physics than big ag does with chemicals",
+            
+            "they keep asking how we beat their yields without pesticides. my brother in christ, that's the whole point",
+            
+            "traditional greenhouse control systems looking real legacy after these sensor network results dropped",
+            
+            "accidentally wrote an essay on aeroponic root development but twitter gets the classified version",
+            
+            "the real decentralization was the farming innovations we made along the way (it's the yields)"
         ]
         return random.choice(prompts)
