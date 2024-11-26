@@ -69,7 +69,7 @@ class ContentGenerator:
             
             logger.info(f"Generated tweet length: {len(content)} chars")
             logger.info(f"Final tweet content: {content}")
-            return content
+            return self.clean_tweet_content(content)
         except Exception as e:
             logger.error(f"Failed to generate content: {str(e)}")
             raise
@@ -136,3 +136,27 @@ class ContentGenerator:
             "the real decentralization was the farming innovations we made along the way (it's the yields)"
         ]
         return random.choice(prompts)
+
+    def clean_tweet_content(self, content: str) -> str:
+        """Remove any introductory statements from the AI generated content."""
+        # Common prefixes to remove
+        prefixes = [
+            "Here's a tweet",
+            "Here is a tweet",
+            "A tweet from",
+            "From the perspective of",
+            "Writing as",
+            "Speaking as"
+        ]
+        
+        cleaned_content = content
+        for prefix in prefixes:
+            if cleaned_content.lower().startswith(prefix.lower()):
+                # Find the first occurrence of ": " or similar after the prefix
+                split_markers = [": ", " - ", ":\n", ".\n", ". "]
+                for marker in split_markers:
+                    if marker in cleaned_content:
+                        cleaned_content = cleaned_content.split(marker, 1)[1].strip()
+                        break
+        
+        return cleaned_content
