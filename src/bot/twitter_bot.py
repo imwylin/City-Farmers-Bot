@@ -19,16 +19,22 @@ class TwitterBot:
         try:
             # Get stored tokens
             tokens = self.redis_handler.get_twitter_tokens("bot_user")
+            logger.info("Retrieved Twitter tokens from Redis")
+            
             if not tokens:
+                logger.error("No Twitter tokens found in Redis")
                 raise Exception("No Twitter tokens found")
             
             # Update client with access token
             self.client.access_token = tokens["access_token"]
+            logger.info("Updated Twitter client with access token")
             
             # Post tweet
             response = await self.client.create_tweet(text=content)
-            logger.info(f"Tweet posted successfully: {response.data['id']}")
-            return response.data['id']
+            tweet_id = response.data['id']
+            logger.info(f"Tweet posted successfully! ID: {tweet_id}")
+            logger.info(f"Tweet content: {content[:50]}...")
+            return tweet_id
             
         except Exception as e:
             logger.error(f"Failed to post tweet: {str(e)}")

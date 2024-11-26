@@ -12,13 +12,14 @@ class ContentGenerator:
         
     async def generate_tweet(self, content_type: str) -> str:
         """Generate tweet content using Claude"""
-        prompts = {
-            "educational": self._get_educational_prompt(),
-            "decentralized": self._get_decentralized_prompt(),
-            "sustainability": self._get_sustainability_prompt()
-        }
-        
         try:
+            logger.info(f"Generating {content_type} tweet content...")
+            prompts = {
+                "educational": self._get_educational_prompt(),
+                "decentralized": self._get_decentralized_prompt(),
+                "sustainability": self._get_sustainability_prompt()
+            }
+            
             message = await self.client.messages.create(
                 model="claude-3-sonnet-20240229",
                 max_tokens=100,
@@ -50,6 +51,7 @@ class ContentGenerator:
                     "content": prompts.get(content_type, prompts["educational"])
                 }]
             )
+            logger.info(f"Successfully generated tweet content: {message.content[:50]}...")
             return message.content
         except Exception as e:
             logger.error(f"Failed to generate content: {str(e)}")
