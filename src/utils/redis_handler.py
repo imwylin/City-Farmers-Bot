@@ -65,3 +65,13 @@ class RedisHandler:
         except Exception as e:
             logger.error(f"Failed to retrieve PKCE credentials: {str(e)}")
             raise
+    
+    def clear_all_tokens(self):
+        """Clear all stored tokens and credentials"""
+        try:
+            self.redis_client.delete("pkce_credentials")
+            self.redis_client.delete("twitter_tokens:bot_user")
+            logger.info("Cleared all tokens from Redis")
+        except Exception as e:
+            logger.error(f"Failed to clear tokens: {str(e)}")
+            raise

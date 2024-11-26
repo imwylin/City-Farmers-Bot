@@ -135,3 +135,14 @@ async def twitter_callback(code: str, state: str):
     except Exception as e:
         logger.error(f"Failed to handle Twitter callback: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/reset-auth")
+async def reset_auth():
+    """Clear stored tokens and PKCE credentials"""
+    try:
+        redis_handler = RedisHandler()
+        redis_handler.clear_all_tokens()
+        return {"message": "Successfully cleared all tokens"}
+    except Exception as e:
+        logger.error(f"Failed to clear tokens: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
