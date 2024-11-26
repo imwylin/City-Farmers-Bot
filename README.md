@@ -90,6 +90,11 @@ REDIRECT_URI=https://your-domain.com/oauth/callback
 
 ## Testing Commands
 
+Test API connectivity:
+```bash
+curl -X POST https://city-farmers-bot.onrender.com/test-tweet
+```
+
 Check system health:
 ```bash
 curl https://city-farmers-bot.onrender.com/health

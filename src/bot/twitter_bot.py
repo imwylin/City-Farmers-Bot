@@ -80,9 +80,6 @@ class TwitterBot:
                     if 'refresh_token' in tokens:
                         new_tokens = await self.refresh_token(tokens['refresh_token'])
                         return await self.post_tweet(content)
-                elif response.status_code == 403:
-                    logger.error("Permission denied. Check app permissions in Twitter Developer Portal")
-                    logger.error("Required: tweet.write scope and Write permissions")
                 raise Exception(f"Failed to post tweet: {response.text}")
                 
             tweet_id = response.json()['data']['id']

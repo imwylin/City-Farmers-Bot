@@ -150,3 +150,22 @@ async def reset_auth():
     except Exception as e:
         logger.error(f"Failed to clear tokens: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/test-tweet")
+async def test_tweet():
+    """Post a simple test tweet"""
+    try:
+        twitter_bot = TwitterBot()
+        content = "Test tweet from City Farmers Bot - checking API connectivity"
+        
+        logger.info("Attempting to post test tweet")
+        tweet_id = await twitter_bot.post_tweet(content)
+        
+        return {
+            "status": "success",
+            "tweet_id": tweet_id,
+            "url": f"https://twitter.com/i/web/status/{tweet_id}"
+        }
+    except Exception as e:
+        logger.error(f"Test tweet failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
