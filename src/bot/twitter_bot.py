@@ -41,15 +41,12 @@ class TwitterBot:
         """Post a tweet to Twitter"""
         try:
             tokens = self.redis_handler.get_twitter_tokens("bot_user")
-            logger.info(f"Retrieved tokens from Redis: {tokens}")
+            logger.info(f"Tokens received in TwitterBot: {tokens}")
+            logger.info(f"Token type in TwitterBot: {type(tokens)}")
             
             if not tokens:
                 logger.error("No Twitter tokens found in Redis")
                 raise Exception("No Twitter tokens found")
-            
-            # Ensure tokens is a dictionary
-            if isinstance(tokens, str):
-                tokens = json.loads(tokens)
             
             # Log token details (safely)
             logger.info("Token validation:")

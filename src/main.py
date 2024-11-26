@@ -129,11 +129,8 @@ async def twitter_callback(code: str, state: str):
             code=code
         )
         
-        # Store token as JSON string
-        st_token = '"{}"'.format(token)
-        j_token = json.loads(st_token)
         redis_handler = RedisHandler()
-        redis_handler.store_twitter_tokens("bot_user", j_token)
+        redis_handler.store_twitter_tokens("bot_user", token)
         
         return {"message": "Successfully authenticated with Twitter"}
     except Exception as e:

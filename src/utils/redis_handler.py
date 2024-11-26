@@ -26,13 +26,21 @@ class RedisHandler:
         """Retrieve Twitter OAuth tokens from Redis"""
         try:
             tokens = self.redis_client.get(f"twitter_tokens:{user_id}")
+            logger.info(f"Raw tokens from Redis: {tokens}")
+            logger.info(f"Token type from Redis: {type(tokens)}")
+            
             if tokens:
-                # Ensure we return a dictionary
                 if isinstance(tokens, bytes):
                     tokens = tokens.decode('utf-8')
-                if isinstance(tokens, str):
+                    logger.info(f"Decoded tokens: {tokens}")
+                    logger.info(f"Decoded type: {type(tokens)}")
+                
+                try:
                     return json.loads(tokens)
-                return tokens
+                except json.JSONDecodeError as e:
+                    logger.error(f"JSON decode error: {e}")
+                    logger.error(f"Failed to decode: {tokens}")
+                    raise
             return None
         except Exception as e:
             logger.error(f"Failed to retrieve Twitter tokens: {str(e)}")
