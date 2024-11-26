@@ -20,7 +20,7 @@ class ContentGenerator:
                 "sustainability": self._get_sustainability_prompt()
             }
             
-            message = await self.client.messages.create(
+            message = self.client.messages.create(
                 model="claude-3-sonnet-20240229",
                 max_tokens=100,
                 temperature=0.9,
