@@ -49,9 +49,8 @@ class TwitterBot:
             
             # Log token details (safely)
             logger.info("Token validation:")
-            logger.info(f"Has access_token: {'access_token' in tokens}")
-            logger.info(f"Has refresh_token: {'refresh_token' in tokens}")
-            logger.info(f"Access token type: {type(tokens.get('access_token', ''))}")
+            logger.info(f"Has access_token: 'access_token' in {tokens.keys()}")
+            logger.info(f"Has refresh_token: 'refresh_token' in {tokens.keys()}")
             
             # Construct and log full request details
             url = "https://api.x.com/2/tweets"
