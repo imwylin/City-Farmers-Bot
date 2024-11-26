@@ -56,11 +56,17 @@ class ContentGenerator:
             
             content = message.content[0].text if isinstance(message.content, list) else message.content
             
+            # Clean up content
+            content = content.strip()  # Remove extra whitespace
+            content = content.replace('\n', ' ')  # Remove line breaks
+            content = content.replace('"', "'")  # Replace double quotes with single
+            
             # Enforce character limit
             if len(content) > 280:
                 content = content[:277] + "..."
                 
             logger.info(f"Generated tweet length: {len(content)} chars")
+            logger.info(f"Final tweet content: {content}")  # Log the final content
             return content
         except Exception as e:
             logger.error(f"Failed to generate content: {str(e)}")
