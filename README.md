@@ -186,4 +186,31 @@ ANTHROPIC_API_KEY=your_claude_api_key
 CLIENT_ID=your_twitter_client_id
 CLIENT_SECRET=your_twitter_client_secret
 REDIS_URL=your_redis_url
+LOG_LEVEL=INFO
+ENVIRONMENT=production
 ```
+
+## Application Settings
+
+- Configure these settings in your deployment:
+
+### Web Service
+- Environment: Python
+- Build Command: `pip install -r requirements.txt`
+- Start Command: `uvicorn src.main:app --host 0.0.0.0 --port $PORT`
+- Health Check Path: `/health`
+
+### Redis Database
+- Type: Redis
+- Version: 7 or higher
+- Persistence: Yes
+- Eviction Policy: noeviction
+
+### Resource Settings
+- Memory: 512 MB minimum
+- Region: Choose based on your location
+- Branch: main
+
+### Application Settings
+- LOG_LEVEL=INFO
+- ENVIRONMENT=production
