@@ -130,10 +130,10 @@ class TweetScheduler:
                 # Start the scheduler first
                 self.scheduler.start()
                 
-                # Then add the job
+                # Then add the job with CT times
                 job = self.scheduler.add_job(
                     self.post_scheduled_tweet,
-                    CronTrigger(hour="9,12,14,16,19", minute="0"),
+                    CronTrigger(hour="9,12,14,16,19", minute="0", timezone='America/Chicago'),  # Add timezone
                     id="tweet_scheduler",
                     name="Post scheduled tweets"
                 )

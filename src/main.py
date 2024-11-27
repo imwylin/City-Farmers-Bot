@@ -113,31 +113,30 @@ async def create_tweet(background_tasks: BackgroundTasks, content_type: str = "e
 @app.get("/health")
 async def health_check():
     """Check system health"""
-    # Static flag to track first health check
-    if not hasattr(health_check, 'first_check'):
-        health_check.first_check = True
-        logger.info("=== Initial Health Check ===")
-        logger.info("Health check endpoint active")
-    
     try:
         redis_handler = RedisHandler()
         redis_connected = redis_handler.verify_connection()
         has_tokens = redis_handler.has_tokens() if redis_connected else False
+        scheduler_running = scheduler.is_running()
+        next_run = scheduler.get_next_run_time()
         
-        # Log status only on first check or when unhealthy
-        if health_check.first_check:
+        is_healthy = redis_connected and has_tokens and scheduler_running
+        
+        if not hasattr(health_check, 'first_check'):
+            health_check.first_check = True
+            logger.info("=== Initial Health Check ===")
             logger.info(f"Redis connected: {redis_connected}")
             logger.info(f"Tokens present: {has_tokens}")
-            health_check.first_check = False
+            logger.info(f"Scheduler running: {scheduler_running}")
+            if next_run:
+                logger.info(f"Next scheduled run: {next_run}")
         
-        status = "healthy" if redis_connected and has_tokens else "unhealthy"
-        if status == "unhealthy":
-            logger.warning("Health check failed - Service unhealthy")
-            
         return {
-            "status": status,
+            "status": "healthy" if is_healthy else "unhealthy",
             "redis_connected": redis_connected,
-            "has_tokens": has_tokens
+            "has_tokens": has_tokens,
+            "scheduler_running": scheduler_running,
+            "next_run": next_run.strftime("%Y-%m-%d %H:%M:%S %Z") if next_run else None
         }
     except Exception as e:
         logger.error(f"Health check failed: {str(e)}")

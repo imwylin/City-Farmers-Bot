@@ -157,6 +157,23 @@ The application is configured for deployment on Render.com:
 4. Visit `/auth/twitter` to authenticate
 5. Check `/health` to verify setup
 
+The health check endpoint verifies:
+- Redis connection
+- Twitter token presence
+- Scheduler status
+- Next scheduled run time
+
+Response example:
+```json
+{
+    "status": "healthy",
+    "redis_connected": true,
+    "has_tokens": true,
+    "scheduler_running": true,
+    "next_run": "2024-11-27 09:00:00 CST"
+}
+```
+
 ## License
 
 MIT
