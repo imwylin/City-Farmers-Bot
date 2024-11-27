@@ -1,11 +1,11 @@
 # City Farmers Bot
 
-A Twitter marketing bot for City Farmers, an innovative urban farming company. The bot generates and posts engaging content about aeroponic farming, greenhouse innovation, and open source Bubble Tech.
+An X marketing bot for City Farmers, an innovative urban farming company. The bot generates and posts engaging content about aeroponic farming, greenhouse innovation, and open source Bubble Tech.
 
 ## Features
 
 - Automated tweet generation using Claude AI
-- Twitter OAuth 2.0 with PKCE
+- X OAuth 2.0 with PKCE
 - Redis-based token storage
 - Background task processing
 - Error handling and logging
@@ -40,24 +40,19 @@ cp .env.example .env
 Required environment variables in `.env`:
 ```
 ANTHROPIC_API_KEY=your_claude_api_key
-CLIENT_ID=your_twitter_client_id
-CLIENT_SECRET=your_twitter_client_secret
+CLIENT_ID=your_x_client_id
+CLIENT_SECRET=your_x_client_secret
 REDIS_URL=your_redis_url
 LOG_LEVEL=INFO
 ENVIRONMENT=production
 ```
 
-## Twitter API Setup
+## X API Setup
 
-1. In Twitter Developer Portal:
+1. In X Developer Portal:
    - Enable OAuth 2.0
    - Set App type to "Web App"
    - Add callback URL: `https://your-domain.com/oauth/callback`
-   - Enable required scopes:
-     - tweet.read
-     - tweet.write
-     - users.read
-     - offline.access
 
 2. Verify API connection:
 ```bash
@@ -68,7 +63,7 @@ curl https://your-domain.com/health
 curl -X POST https://your-domain.com/reset-auth
 
 # Visit to authenticate
-https://your-domain.com/auth/twitter
+https://your-domain.com/auth/x
 ```
 
 ## Content Types
@@ -99,13 +94,13 @@ The application is configured for deployment on Render.com:
    - Start Command: `uvicorn src.main:app --host 0.0.0.0 --port $PORT`
    - Health Check Path: `/health`
 3. Configure environment variables
-4. Visit `/auth/twitter` to authenticate
+4. Visit `/auth/x` to authenticate
 5. Check `/health` to verify setup
 
 ## API Endpoints
 
 ### Authentication
-- `GET /auth/twitter`: Start Twitter OAuth flow
+- `GET /auth/x`: Start X OAuth flow
 - `GET /callback`: OAuth callback handler
 - `POST /reset-auth`: Clear stored tokens
 
