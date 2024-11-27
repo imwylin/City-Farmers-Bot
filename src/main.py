@@ -73,30 +73,14 @@ async def startup():
 async def shutdown_scheduler():
     """Handle shutdown event"""
     try:
-        logger.warning("=== Application Shutdown Event ===")
-        logger.info("Checking scheduler status...")
-        
         if scheduler.is_running():
             next_run = scheduler.get_next_run_time()
-            logger.info(f"Active scheduler found - Next run at: {next_run}")
-            logger.info("Attempting to preserve scheduler...")
-            
-            # Try to preserve scheduler
-            scheduler.shutdown()  # This will now log its decision
-            
-            # Check if preservation worked
-            if scheduler.is_running():
-                logger.info("Scheduler successfully preserved")
-            else:
-                logger.warning("Scheduler stopped despite preservation attempt")
+            logger.info(f"Preserving scheduler - Next run at: {next_run}")
+            scheduler.shutdown()  # This will now be quieter
         else:
-            logger.info("No active scheduler found")
-            
-        logger.info("=== Shutdown Handler Complete ===")
+            logger.warning("No active scheduler found during shutdown")
     except Exception as e:
-        logger.error("=== Shutdown Handler Error ===")
-        logger.error(f"Error during shutdown event: {str(e)}")
-        logger.exception("Shutdown error traceback:")
+        logger.error(f"Shutdown error: {str(e)}")
 
 # Add a root endpoint to prevent 404s
 @app.head("/")
