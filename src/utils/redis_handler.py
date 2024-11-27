@@ -47,13 +47,13 @@ class RedisHandler:
             raise
     
     def verify_connection(self):
-        """Verify Redis connection"""
+        """Verify Redis connection is working"""
         try:
             self.redis_client.ping()
-            logger.info("Redis connection verified")
+            logger.debug("Redis connection verified")
             return True
         except Exception as e:
-            logger.error(f"Redis verification failed: {str(e)}")
+            logger.error(f"Redis connection failed: {str(e)}")
             return False
     
     def has_tokens(self):

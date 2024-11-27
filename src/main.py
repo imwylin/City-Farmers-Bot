@@ -17,23 +17,8 @@ import random
 import asyncio
 from contextlib import asynccontextmanager
 
-# Create a background task to keep the app alive
-async def keep_app_alive():
-    while True:
-        await asyncio.sleep(30)  # Sleep for 30 seconds
-        logger.info("Background task keeping app alive")
-
-# Modify FastAPI initialization to include lifespan
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Startup
-    background_task = asyncio.create_task(keep_app_alive())
-    yield
-    # Shutdown
-    background_task.cancel()
-
 # Initialize FastAPI after lifespan definition
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 settings = get_settings()
 
 # Configure logging
@@ -50,10 +35,24 @@ scheduler = TweetScheduler()
 async def start_scheduler():
     """Start the scheduler when the app starts"""
     try:
-        scheduler.start()
-        logger.info("Scheduler started successfully on app startup")
+        logger.info("=== Application Startup ===")
+        logger.info("Initializing scheduler...")
+        
+        if scheduler.is_running():
+            logger.info("Scheduler already running")
+            next_run = scheduler.get_next_run_time()
+            logger.info(f"Next scheduled run: {next_run}")
+        else:
+            logger.info("Starting scheduler...")
+            scheduler.start()
+            next_run = scheduler.get_next_run_time()
+            logger.info(f"Scheduler started - Next run at: {next_run}")
+            
+        logger.info("=== Startup Complete ===")
     except Exception as e:
+        logger.error("=== Startup Error ===")
         logger.error(f"Failed to start scheduler: {str(e)}")
+        logger.exception("Startup error traceback:")
         raise
 
 @app.on_event("shutdown")
@@ -262,13 +261,13 @@ async def scheduler_status():
 async def keep_alive():
     """Endpoint for Render to ping to keep service alive"""
     try:
-        logger.info("=== Keep-Alive Check ===")
+        logger.debug("Keep-alive check")
         next_run = scheduler.get_next_run_time()
         is_running = scheduler.is_running()
         
-        logger.info(f"Scheduler running: {is_running}")
+        logger.debug(f"Scheduler status - running: {is_running}")
         if next_run:
-            logger.info(f"Next scheduled run: {next_run}")
+            logger.debug(f"Next run: {next_run}")
         else:
             logger.warning("No next run time found")
             

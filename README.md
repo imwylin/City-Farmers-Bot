@@ -151,6 +151,7 @@ The application is configured for deployment on Render.com:
 2. Create Web Service:
    - Build Command: `pip install -r requirements.txt`
    - Start Command: `uvicorn src.main:app --host 0.0.0.0 --port $PORT`
+   - Health Check Path: `/health`
 3. Configure environment variables
 4. Visit `/auth/twitter` to authenticate
 5. Check `/health` to verify setup
