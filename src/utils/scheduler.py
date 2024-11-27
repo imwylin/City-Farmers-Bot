@@ -127,7 +127,10 @@ class TweetScheduler:
                 current_time = datetime.now(pytz.timezone('America/Chicago'))
                 logger.info(f"Current time (CT): {current_time}")
                 
-                # Create the job
+                # Start the scheduler first
+                self.scheduler.start()
+                
+                # Then add the job
                 job = self.scheduler.add_job(
                     self.post_scheduled_tweet,
                     CronTrigger(hour="9,12,14,16,19", minute="0"),
@@ -135,10 +138,10 @@ class TweetScheduler:
                     name="Post scheduled tweets"
                 )
                 
-                # Log the next run time
-                logger.info(f"Next scheduled run: {job.next_run_time}")
+                # Now we can safely access next_run_time
+                if job and hasattr(job, 'next_run_time'):
+                    logger.info(f"Next scheduled run: {job.next_run_time}")
                 
-                self.scheduler.start()
                 logger.info("Initial schedule created")
                 logger.info("Scheduler started successfully")
                 logger.info("=== Startup Complete ===")

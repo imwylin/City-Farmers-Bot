@@ -87,6 +87,7 @@ REDIRECT_URI=https://your-domain.com/oauth/callback
 
 ### Monitoring
 - `GET /health`: Check system health status
+- `GET /scheduler-status`: Check scheduler status and next run time
 
 ## Testing Commands
 
@@ -119,14 +120,28 @@ curl -X POST https://city-farmers-bot.onrender.com/reset-auth
 
 ## Automated Posting Schedule
 
-The bot automatically posts at these times daily:
+The bot uses a scheduler to automatically post tweets at set times (Central Time):
+
 - 9:00 AM
 - 12:00 PM
 - 2:00 PM
 - 4:00 PM
 - 7:00 PM
 
-Content types rotate through educational, decentralized, and sustainability themes.
+Content types rotate between educational, decentralized, and shitposting themes. The scheduler automatically handles rate limits by rescheduling for the next day.
+
+Check scheduler status:
+```bash
+curl https://your-app.onrender.com/scheduler-status
+```
+
+Response:
+```json
+{
+    "running": true,
+    "next_run": "2024-11-27 09:00:00 CST"
+}
+```
 
 ## Deployment
 
@@ -143,3 +158,13 @@ The application is configured for deployment on Render.com:
 ## License
 
 MIT
+
+## Environment Variables
+
+Required environment variables:
+```
+ANTHROPIC_API_KEY=your_claude_api_key
+CLIENT_ID=your_twitter_client_id
+CLIENT_SECRET=your_twitter_client_secret
+REDIS_URL=your_redis_url
+```
