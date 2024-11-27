@@ -33,7 +33,6 @@ class RedisHandler:
                     return json.loads(tokens)
                 except json.JSONDecodeError as e:
                     logger.error(f"JSON decode error: {e}")
-                    logger.error(f"Failed to decode: {tokens}")
                     raise
             return None
         except Exception as e:

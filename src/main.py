@@ -32,26 +32,40 @@ logger = logging.getLogger(__name__)
 scheduler = TweetScheduler()
 
 @app.on_event("startup")
-async def start_scheduler():
-    """Start the scheduler when the app starts"""
+async def startup():
+    """Application startup sequence"""
     try:
-        logger.info("=== Application Startup ===")
-        logger.info("Initializing scheduler...")
+        logger.info("=== Application Startup Sequence ===")
         
+        # 1. Check Redis connection
+        logger.info("Checking Redis connection...")
+        redis_handler = RedisHandler()
+        if not redis_handler.verify_connection():
+            raise Exception("Redis connection failed")
+        logger.info("Redis connection established")
+        
+        # 2. Verify tokens exist
+        logger.info("Verifying Twitter tokens...")
+        if not redis_handler.has_tokens():
+            logger.warning("No Twitter tokens found - Authentication required")
+        else:
+            logger.info("Twitter tokens verified")
+        
+        # 3. Start scheduler
+        logger.info("Initializing scheduler...")
         if scheduler.is_running():
             logger.info("Scheduler already running")
             next_run = scheduler.get_next_run_time()
             logger.info(f"Next scheduled run: {next_run}")
         else:
-            logger.info("Starting scheduler...")
             scheduler.start()
             next_run = scheduler.get_next_run_time()
             logger.info(f"Scheduler started - Next run at: {next_run}")
-            
+        
         logger.info("=== Startup Complete ===")
     except Exception as e:
-        logger.error("=== Startup Error ===")
-        logger.error(f"Failed to start scheduler: {str(e)}")
+        logger.error("=== Startup Failed ===")
+        logger.error(f"Startup error: {str(e)}")
         logger.exception("Startup error traceback:")
         raise
 
@@ -270,28 +284,4 @@ async def scheduler_status():
         }
     except Exception as e:
         logger.error(f"Failed to get scheduler status: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/keep-alive")
-async def keep_alive():
-    """Endpoint for Render to ping to keep service alive"""
-    try:
-        logger.debug("Keep-alive check")
-        next_run = scheduler.get_next_run_time()
-        is_running = scheduler.is_running()
-        
-        logger.debug(f"Scheduler status - running: {is_running}")
-        if next_run:
-            logger.debug(f"Next run: {next_run}")
-        else:
-            logger.warning("No next run time found")
-            
-        return {
-            "status": "alive",
-            "scheduler_running": is_running,
-            "next_run": next_run.strftime("%Y-%m-%d %H:%M:%S %Z") if next_run else None
-        }
-    except Exception as e:
-        logger.error(f"Keep-alive check failed: {str(e)}")
-        logger.exception("Keep-alive error traceback:")
         raise HTTPException(status_code=500, detail=str(e))
