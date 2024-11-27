@@ -157,12 +157,6 @@ The application is configured for deployment on Render.com:
 4. Visit `/auth/twitter` to authenticate
 5. Check `/health` to verify setup
 
-> **Note:** The free tier of Render spins down after periods of inactivity. 
-> For reliable 24/7 scheduling, consider:
-> - Using a paid tier
-> - Setting up an external service to ping `/keep-alive` every 5 minutes
-> - Using a different hosting provider
-
 ## License
 
 MIT
