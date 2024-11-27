@@ -152,9 +152,25 @@ class TweetScheduler:
             raise
 
     def shutdown(self):
-        """Shutdown the scheduler gracefully"""
-        if self.scheduler.running:
-            self.scheduler.shutdown()
+        """Handle shutdown request"""
+        logger.info("=== Scheduler Shutdown Handler ===")
+        if not self.scheduler.running:
+            logger.info("Scheduler already stopped")
+            return
+            
+        logger.warning("Shutdown requested for running scheduler")
+        logger.info("Checking for pending jobs...")
+        
+        next_run = self.get_next_run_time()
+        if next_run:
+            logger.info(f"Pending jobs found - Next run at: {next_run}")
+            logger.info("Preserving scheduler state")
+            return
+            
+        logger.info("No pending jobs found")
+        logger.info("Proceeding with shutdown...")
+        self.scheduler.shutdown()
+        logger.info("Scheduler shutdown complete")
 
     def get_next_run_time(self):
         """Get the next scheduled run time"""

@@ -40,12 +40,32 @@ async def start_scheduler():
 
 @app.on_event("shutdown")
 async def shutdown_scheduler():
-    """Shutdown the scheduler gracefully"""
+    """Handle shutdown event"""
     try:
-        scheduler.scheduler.shutdown()
-        logger.info("Scheduler shut down successfully")
+        logger.warning("=== Application Shutdown Event ===")
+        logger.info("Checking scheduler status...")
+        
+        if scheduler.is_running():
+            next_run = scheduler.get_next_run_time()
+            logger.info(f"Active scheduler found - Next run at: {next_run}")
+            logger.info("Attempting to preserve scheduler...")
+            
+            # Try to preserve scheduler
+            scheduler.shutdown()  # This will now log its decision
+            
+            # Check if preservation worked
+            if scheduler.is_running():
+                logger.info("Scheduler successfully preserved")
+            else:
+                logger.warning("Scheduler stopped despite preservation attempt")
+        else:
+            logger.info("No active scheduler found")
+            
+        logger.info("=== Shutdown Handler Complete ===")
     except Exception as e:
-        logger.error(f"Error shutting down scheduler: {str(e)}")
+        logger.error("=== Shutdown Handler Error ===")
+        logger.error(f"Error during shutdown event: {str(e)}")
+        logger.exception("Shutdown error traceback:")
 
 # Add a root endpoint to prevent 404s
 @app.head("/")
@@ -218,4 +238,28 @@ async def scheduler_status():
         }
     except Exception as e:
         logger.error(f"Failed to get scheduler status: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/keep-alive")
+async def keep_alive():
+    """Endpoint for Render to ping to keep service alive"""
+    try:
+        logger.info("=== Keep-Alive Check ===")
+        next_run = scheduler.get_next_run_time()
+        is_running = scheduler.is_running()
+        
+        logger.info(f"Scheduler running: {is_running}")
+        if next_run:
+            logger.info(f"Next scheduled run: {next_run}")
+        else:
+            logger.warning("No next run time found")
+            
+        return {
+            "status": "alive",
+            "scheduler_running": is_running,
+            "next_run": next_run.strftime("%Y-%m-%d %H:%M:%S %Z") if next_run else None
+        }
+    except Exception as e:
+        logger.error(f"Keep-alive check failed: {str(e)}")
+        logger.exception("Keep-alive error traceback:")
         raise HTTPException(status_code=500, detail=str(e))
