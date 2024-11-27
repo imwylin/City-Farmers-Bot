@@ -14,8 +14,26 @@ from requests_oauthlib import OAuth2Session
 import json
 import datetime
 import random
+import asyncio
+from contextlib import asynccontextmanager
 
-app = FastAPI()
+# Create a background task to keep the app alive
+async def keep_app_alive():
+    while True:
+        await asyncio.sleep(30)  # Sleep for 30 seconds
+        logger.info("Background task keeping app alive")
+
+# Modify FastAPI initialization to include lifespan
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    background_task = asyncio.create_task(keep_app_alive())
+    yield
+    # Shutdown
+    background_task.cancel()
+
+# Initialize FastAPI after lifespan definition
+app = FastAPI(lifespan=lifespan)
 settings = get_settings()
 
 # Configure logging
