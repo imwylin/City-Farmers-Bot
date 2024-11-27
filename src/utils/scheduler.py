@@ -2,7 +2,6 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from src.bot.twitter_bot import TwitterBot
 from src.bot.content_generator import ContentGenerator
-from src.bot.farcaster_bot import FarcasterBot
 import pytz
 import logging
 from datetime import datetime, timedelta
@@ -15,7 +14,6 @@ class TweetScheduler:
         self.scheduler = AsyncIOScheduler(timezone=pytz.timezone('America/Chicago'))
         self.content_generator = ContentGenerator()
         self.twitter_bot = TwitterBot()
-        self.farcaster_bot = FarcasterBot()
 
     def _calculate_next_slot_after_wait(self, current_time: datetime) -> datetime:
         """Calculate the next available slot after a 24-hour wait period"""
@@ -97,15 +95,6 @@ class TweetScheduler:
             # Post to Twitter
             await self.twitter_bot.post_tweet(content)
             logger.info(f"Tweet posted successfully - type: {content_type}")
-            
-            # Try Farcaster but don't let failures stop the scheduler
-            try:
-                await self.farcaster_bot.post_cast(content)
-                logger.info(f"Cast posted successfully - type: {content_type}")
-            except Exception as farcaster_error:
-                logger.error(f"Failed to post to Farcaster: {str(farcaster_error)}")
-                logger.exception("Farcaster error traceback:")
-                # Continue execution - don't re-raise
             
         except Exception as e:
             if "Too Many Requests" in str(e):
