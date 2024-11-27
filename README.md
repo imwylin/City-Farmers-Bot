@@ -9,6 +9,7 @@ A Twitter marketing bot for City Farmers, an innovative urban farming company. T
 - Redis-based token storage
 - Background task processing
 - Error handling and logging
+- Automated scheduling with rate limit handling
 
 ## Setup
 
@@ -83,7 +84,7 @@ REDIRECT_URI=https://your-domain.com/oauth/callback
     - `content_type`: Type of content to generate
       - `educational`: Bubble Tech and growing systems
       - `decentralized`: Local farming and blockchain
-      - `sustainability`: Unhinged sustainability posts
+      - `shitposting`: Elite agricultural truth bombs
 
 ### Monitoring
 - `GET /health`: Check system health status
@@ -109,8 +110,8 @@ curl -X POST "https://city-farmers-bot.onrender.com/post-tweet?content_type=educ
 # Decentralized agriculture content
 curl -X POST "https://city-farmers-bot.onrender.com/post-tweet?content_type=decentralized"
 
-# Sustainability content
-curl -X POST "https://city-farmers-bot.onrender.com/post-tweet?content_type=sustainability"
+# Elite agricultural shitposting
+curl -X POST "https://city-farmers-bot.onrender.com/post-tweet?content_type=shitposting"
 ```
 
 Reset authentication:

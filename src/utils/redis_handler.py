@@ -26,15 +26,9 @@ class RedisHandler:
         """Retrieve Twitter OAuth tokens from Redis"""
         try:
             tokens = self.redis_client.get(f"twitter_tokens:{user_id}")
-            logger.info(f"Raw tokens from Redis: {tokens}")
-            logger.info(f"Token type from Redis: {type(tokens)}")
-            
             if tokens:
                 if isinstance(tokens, bytes):
                     tokens = tokens.decode('utf-8')
-                    logger.info(f"Decoded tokens: {tokens}")
-                    logger.info(f"Decoded type: {type(tokens)}")
-                
                 try:
                     return json.loads(tokens)
                 except json.JSONDecodeError as e:
@@ -50,7 +44,6 @@ class RedisHandler:
         """Verify Redis connection is working"""
         try:
             self.redis_client.ping()
-            logger.debug("Redis connection verified")
             return True
         except Exception as e:
             logger.error(f"Redis connection failed: {str(e)}")
