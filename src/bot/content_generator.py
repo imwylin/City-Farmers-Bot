@@ -10,6 +10,23 @@ class ContentGenerator:
         self.settings = get_settings()
         self.client = Anthropic(api_key=self.settings.ANTHROPIC_API_KEY)
         
+    def _truncate_to_limit(self, tweet: str, limit: int = 280) -> str:
+        """Truncate tweet to character limit at last complete word"""
+        if len(tweet) <= limit:
+            return tweet
+            
+        # Find the last space before the limit
+        truncated = tweet[:limit]
+        last_space = truncated.rfind(' ')
+        if last_space > 0:
+            truncated = truncated[:last_space]
+        
+        # Add ellipsis only if we actually truncated
+        if len(truncated) < len(tweet):
+            truncated = truncated.rstrip('.') + "..."
+            
+        return truncated
+
     async def generate_tweet(self, content_type: str) -> str:
         """Generate tweet content based on type"""
         try:
@@ -17,18 +34,18 @@ class ContentGenerator:
             
             # Define the prompt based on content type
             if content_type == "educational":
-                prompt = "Write a technical but accessible tweet about aeroponic farming or Bubble Tech innovation. Focus on the technology and benefits. Keep it under 280 characters."
+                prompt = "Write a complete tweet about aeroponic farming or Bubble Tech innovation. Focus on the technology and benefits. The tweet must be under 280 characters and should not be cut off mid-thought."
             elif content_type == "decentralized":
-                prompt = "Write a tweet about decentralized agriculture and local food systems. Include themes of community resilience and open source technology. Keep it under 280 characters."
+                prompt = "Write a complete tweet about decentralized agriculture and local food systems. Include themes of community resilience and open source technology. The tweet must be under 280 characters and should not be cut off mid-thought."
             else:  # shitposting
-                prompt = "Write a raw, technical tweet about Bubble Tech's full stack from the perspective of the ag tech shitposter. Keep it under 280 characters."
+                prompt = "Write a complete tweet about Bubble Tech's full stack from the perspective of the ag tech shitposter. The tweet must be under 280 characters and should not be cut off mid-thought."
             
             # Get response from Claude
             message = await self.client.messages.create(
                 model="claude-3-sonnet-20240229",
                 max_tokens=1024,
                 temperature=0.9,
-                system="You are CityFarmersBot, tweeting about urban agriculture and Bubble Tech innovation. Your tweets are technical but engaging.",
+                system="You are CityFarmersBot, tweeting about urban agriculture and Bubble Tech innovation. Your tweets must be complete thoughts under 280 characters. Never exceed the character limit or leave thoughts unfinished.",
                 messages=[{
                     "role": "user",
                     "content": prompt
@@ -66,7 +83,7 @@ class ContentGenerator:
             # Ensure we're within Twitter's character limit
             if len(tweet) > 280:
                 logger.warning(f"Content exceeded limit ({len(tweet)} chars), truncating...")
-                tweet = tweet[:280]
+                tweet = self._truncate_to_limit(tweet)
             
             logger.info(f"Generated tweet length: {len(tweet)} chars")
             logger.info(f"Final tweet content: {tweet}")
