@@ -82,3 +82,36 @@ class RedisHandler:
         except Exception as e:
             logger.error(f"Failed to clear tokens: {str(e)}")
             raise
+    
+    def store_rate_limit_state(self, resume_time: str):
+        """Store rate limit state and resume time"""
+        try:
+            self.redis_client.setex(
+                "rate_limit_state",
+                24 * 60 * 60,  # 24 hour expiration
+                resume_time
+            )
+            logger.info(f"Stored rate limit resume time: {resume_time}")
+        except Exception as e:
+            logger.error(f"Failed to store rate limit state: {str(e)}")
+            raise
+
+    def get_rate_limit_state(self) -> str:
+        """Get stored rate limit resume time"""
+        try:
+            resume_time = self.redis_client.get("rate_limit_state")
+            if resume_time:
+                return resume_time.decode('utf-8')
+            return None
+        except Exception as e:
+            logger.error(f"Failed to get rate limit state: {str(e)}")
+            return None
+
+    def clear_rate_limit_state(self):
+        """Clear stored rate limit state"""
+        try:
+            self.redis_client.delete("rate_limit_state")
+            logger.info("Cleared rate limit state")
+        except Exception as e:
+            logger.error(f"Failed to clear rate limit state: {str(e)}")
+            raise

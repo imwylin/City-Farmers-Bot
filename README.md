@@ -133,7 +133,7 @@ Content types rotate between educational, decentralized, and shitposting themes.
 
 Check scheduler status:
 ```bash
-curl https://your-app.onrender.com/scheduler-status
+curl https://city-farmers-bot.onrender.com/scheduler-status
 ```
 
 Response:
@@ -200,17 +200,20 @@ ENVIRONMENT=production
 - Start Command: `uvicorn src.main:app --host 0.0.0.0 --port $PORT`
 - Health Check Path: `/health`
 
-### Redis Database
-- Type: Redis
-- Version: 7 or higher
-- Persistence: Yes
-- Eviction Policy: noeviction
-
-### Resource Settings
-- Memory: 512 MB minimum
-- Region: Choose based on your location
-- Branch: main
-
 ### Application Settings
 - LOG_LEVEL=INFO
 - ENVIRONMENT=production
+
+## Rate Limits
+
+The bot is subject to Twitter's API rate limits:
+
+- Daily tweet limit: 17 tweets per 24-hour period
+- Current behavior on rate limits:
+  - 429 (Too Many Requests): Operation fails and logs error
+  - 401 (Unauthorized): Attempts token refresh
+  - Rate limit resets: Daily at UTC midnight
+
+Note: Rate limit handling improvements are planned for a future update to provide better automatic rescheduling and monitoring capabilities.
+
+To avoid rate limits, the scheduler spaces out posts throughout the day. If you encounter rate limits, wait until the next UTC day before resuming operations.
