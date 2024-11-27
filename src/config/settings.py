@@ -18,8 +18,6 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     ENVIRONMENT: str = "development"
     
-    FARCASTER_MNEMONIC: str = Field(..., env='FARCASTER_MNEMONIC')
-    
     class Config:
         env_file = ".env"
 

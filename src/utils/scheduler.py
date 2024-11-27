@@ -76,7 +76,7 @@ class TweetScheduler:
             raise
 
     async def post_scheduled_tweet(self):
-        """Post content to both Twitter and Farcaster"""
+        """Post tweet with rotating content types"""
         try:
             logger.info("=== Scheduler Triggered ===")
             logger.info("Attempting to post scheduled tweet...")
