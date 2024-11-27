@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 from functools import lru_cache
+from pydantic import Field
 
 class Settings(BaseSettings):
     # Twitter API Credentials
@@ -16,6 +17,8 @@ class Settings(BaseSettings):
     # Application Settings
     LOG_LEVEL: str = "INFO"
     ENVIRONMENT: str = "development"
+    
+    FARCASTER_MNEMONIC: str = Field(..., env='FARCASTER_MNEMONIC')
     
     class Config:
         env_file = ".env"

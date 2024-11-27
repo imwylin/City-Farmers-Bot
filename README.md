@@ -1,11 +1,12 @@
 # City Farmers Bot
 
-A Twitter marketing bot for City Farmers, an innovative urban farming company. The bot generates and posts engaging content about aeroponic farming, greenhouse innovation, and open source Bubble Tech.
+A social media bot for City Farmers, an innovative urban farming company. The bot generates and posts engaging content about aeroponic farming, greenhouse innovation, and open source Bubble Tech to both Twitter and Farcaster.
 
 ## Features
 
 - Automated tweet generation using Claude AI
 - Twitter OAuth 2.0 with PKCE
+- Cross-posting to Farcaster
 - Redis-based token storage
 - Background task processing
 - Error handling and logging
@@ -188,6 +189,7 @@ CLIENT_SECRET=your_twitter_client_secret
 REDIS_URL=your_redis_url
 LOG_LEVEL=INFO
 ENVIRONMENT=production
+FARCASTER_MNEMONIC=your_farcaster_mnemonic_here
 ```
 
 ## Application Settings
@@ -217,3 +219,13 @@ The bot is subject to Twitter's API rate limits:
 Note: Rate limit handling improvements are planned for a future update to provide better automatic rescheduling and monitoring capabilities.
 
 To avoid rate limits, the scheduler spaces out posts throughout the day. If you encounter rate limits, wait until the next UTC day before resuming operations.
+
+## Farcaster Setup
+
+1. Get your Farcaster custody account mnemonic from Warpcast
+2. Add the mnemonic to your `.env` file:
+   ```
+   FARCASTER_MNEMONIC=your_12_word_recovery_phrase
+   ```
+3. The bot will automatically cross-post content to both Twitter and Farcaster
+4. Farcaster errors are handled gracefully - if posting to Farcaster fails, the bot will continue operating on Twitter

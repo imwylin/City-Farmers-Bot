@@ -40,8 +40,8 @@ class ContentGenerator:
             else:  # shitposting
                 prompt = "Write a complete tweet about Bubble Tech's full stack from the perspective of the ag tech shitposter. The tweet must be under 280 characters and should not be cut off mid-thought."
             
-            # Get response from Claude
-            message = await self.client.messages.create(
+            # Get response from Claude (synchronously)
+            message = self.client.messages.create(
                 model="claude-3-sonnet-20240229",
                 max_tokens=1024,
                 temperature=0.9,
