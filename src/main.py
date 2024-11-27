@@ -48,6 +48,7 @@ async def shutdown_scheduler():
         logger.error(f"Error shutting down scheduler: {str(e)}")
 
 # Add a root endpoint to prevent 404s
+@app.head("/")
 @app.get("/")
 async def root():
     return {"status": "running", "message": "City Farmers Bot API"}
