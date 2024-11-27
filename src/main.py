@@ -181,17 +181,41 @@ async def test_tweet():
     try:
         twitter_bot = TwitterBot()
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        test_id = ''.join(random.choices('0123456789', k=4))  # Random 4-digit number
+        test_id = ''.join(random.choices('0123456789', k=4))
         content = f"Test tweet {test_id} from City Farmers Bot - checking API connectivity at {timestamp}"
         
-        logger.info("Attempting to post test tweet")
-        tweet_id = await twitter_bot.post_tweet(content)
-        
-        return {
-            "status": "success",
-            "tweet_id": tweet_id,
-            "url": f"https://twitter.com/i/web/status/{tweet_id}"
-        }
+        logger.info("=== Test Tweet Attempt ===")
+        try:
+            tweet_id = await twitter_bot.post_tweet(content)
+            return {
+                "status": "success",
+                "tweet_id": tweet_id,
+                "url": f"https://twitter.com/i/web/status/{tweet_id}"
+            }
+        except Exception as e:
+            if "Too Many Requests" in str(e):
+                logger.warning("Rate limit detected in test endpoint - Notifying scheduler")
+                # Tell scheduler to delay
+                await scheduler.handle_rate_limit()
+                return {
+                    "status": "rate_limited",
+                    "message": "Rate limit hit - Scheduler has been notified to delay posts",
+                    "error": str(e)
+                }
+            raise
     except Exception as e:
         logger.error(f"Test tweet failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/scheduler-status")
+async def scheduler_status():
+    """Check scheduler status"""
+    try:
+        next_run = scheduler.get_next_run_time()
+        return {
+            "running": scheduler.is_running(),
+            "next_run": next_run.strftime("%Y-%m-%d %H:%M:%S %Z") if next_run else None
+        }
+    except Exception as e:
+        logger.error(f"Failed to get scheduler status: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

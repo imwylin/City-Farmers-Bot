@@ -78,18 +78,66 @@ class TweetScheduler:
                 logger.exception("Error traceback:")
                 raise
 
+    async def handle_rate_limit(self):
+        """Handle rate limit from external trigger"""
+        logger.warning("=== External Rate Limit Handler ===")
+        logger.warning("Rate limit reported - Initiating rescheduling process")
+        
+        try:
+            # Remove current job
+            logger.info("Removing current schedule...")
+            self.scheduler.remove_job('tweet_scheduler')
+            logger.info("Current schedule removed successfully")
+            
+            # Calculate tomorrow's date
+            tomorrow = datetime.now(pytz.timezone('America/Chicago')) + timedelta(days=1)
+            logger.info(f"Calculated resume time: {tomorrow}")
+            
+            # Reschedule for tomorrow
+            logger.info("Creating new schedule...")
+            self.scheduler.add_job(
+                self.post_scheduled_tweet,
+                CronTrigger(
+                    year=tomorrow.year,
+                    month=tomorrow.month,
+                    day=tomorrow.day,
+                    hour="9,12,14,16,19",
+                    minute="0"
+                ),
+                id="tweet_scheduler",
+                name="Post scheduled tweets"
+            )
+            logger.info(f"New schedule created successfully")
+            logger.info(f"Tweets will resume at: {tomorrow}")
+            logger.info("=== Rescheduling Complete ===")
+            
+        except Exception as reschedule_error:
+            logger.error(f"Failed to reschedule: {str(reschedule_error)}")
+            logger.exception("Rescheduling error traceback:")
+            raise
+
     def start(self):
         """Start the scheduler with defined jobs"""
         try:
             if not self.scheduler.running:
                 logger.info("=== Starting Scheduler ===")
                 logger.info("Creating initial schedule...")
-                self.scheduler.add_job(
+                
+                # Get current time for context
+                current_time = datetime.now(pytz.timezone('America/Chicago'))
+                logger.info(f"Current time (CT): {current_time}")
+                
+                # Create the job
+                job = self.scheduler.add_job(
                     self.post_scheduled_tweet,
                     CronTrigger(hour="9,12,14,16,19", minute="0"),
                     id="tweet_scheduler",
                     name="Post scheduled tweets"
                 )
+                
+                # Log the next run time
+                logger.info(f"Next scheduled run: {job.next_run_time}")
+                
                 self.scheduler.start()
                 logger.info("Initial schedule created")
                 logger.info("Scheduler started successfully")
@@ -104,3 +152,18 @@ class TweetScheduler:
         """Shutdown the scheduler gracefully"""
         if self.scheduler.running:
             self.scheduler.shutdown()
+
+    def get_next_run_time(self):
+        """Get the next scheduled run time"""
+        try:
+            job = self.scheduler.get_job('tweet_scheduler')
+            if job:
+                return job.next_run_time
+            return None
+        except Exception as e:
+            logger.error(f"Failed to get next run time: {str(e)}")
+            return None
+
+    def is_running(self):
+        """Check if scheduler is running"""
+        return self.scheduler.running and self.scheduler.get_job('tweet_scheduler') is not None
