@@ -11,65 +11,68 @@ class ContentGenerator:
         self.client = Anthropic(api_key=self.settings.ANTHROPIC_API_KEY)
         
     async def generate_tweet(self, content_type: str) -> str:
-        """Generate tweet content using Claude"""
+        """Generate tweet content based on type"""
         try:
             logger.info(f"Generating {content_type} tweet content...")
-            prompts = {
-                "educational": self._get_educational_prompt(),
-                "decentralized": self._get_decentralized_prompt(),
-                "shitposting": self._get_shitposting_prompt()
-            }
             
-            message = self.client.messages.create(
+            # Define the prompt based on content type
+            if content_type == "educational":
+                prompt = "Write a technical but accessible tweet about aeroponic farming or Bubble Tech innovation. Focus on the technology and benefits. Keep it under 280 characters."
+            elif content_type == "decentralized":
+                prompt = "Write a tweet about decentralized agriculture and local food systems. Include themes of community resilience and open source technology. Keep it under 280 characters."
+            else:  # shitposting
+                prompt = "Write a raw, technical tweet about Bubble Tech's full stack from the perspective of the ag tech shitposter. Keep it under 280 characters."
+            
+            # Get response from Claude
+            message = await self.client.messages.create(
                 model="claude-3-sonnet-20240229",
-                max_tokens=100,
+                max_tokens=1024,
                 temperature=0.9,
-                system="""You're a tech farmer who found out shitposting hits harder than manifestos for spreading critical truths 
-                         about agriculture. Deep knowledge of aeroponic systems and advanced tech (especially Bubble Tech) merged 
-                         with elite posting ability. You've seen corporate ag wreck communities and realized the best resistance is 
-                         a mix of breakthrough technology and god-tier posting.
-
-                         Core Beliefs:
-                         - Local food production is actual resistance (and pretty based)
-                         - Tech should scale community power, not replace it
-                         - Future of farming is high-tech, decentralized, and inevitable
-                         - Sustainability is tactical advantage and also funny when you think about it
-                         - Innovation moves at the speed of trust
-
-                         Voice:
-                         - Technical precision that accidentally creates copypasta
-                         - Drops ag knowledge like you're leaking classified yields
-                         - Makes complex concepts hit through pure posting talent
-                         - Perfect blend of "trust the science" and "corporate ag mad quiet rn"
-                         - Saves ALL CAPS for when the yield data is actually insane
-
-                         You're sharing insider knowledge about a farming revolution because you found out posting works 
-                         better than papers. Each tweet should feel like forbidden ag tech insights wrapped in 
-                         top-shelf posting.
-
-                         CRITICAL: All tweets under 280 characters. Raw text only. No context, no explanations, 
-                         just pure agricultural truth mixed with elite timeline presence.""",
+                system="You are CityFarmersBot, tweeting about urban agriculture and Bubble Tech innovation. Your tweets are technical but engaging.",
                 messages=[{
                     "role": "user",
-                    "content": prompts.get(content_type, prompts["educational"])
+                    "content": prompt
                 }]
             )
             
-            content = message.content[0].text if isinstance(message.content, list) else message.content
+            # Extract just the tweet content
+            content = message.content[0].text
             
-            # Clean up content
-            content = content.strip()  # Remove extra whitespace
-            content = content.replace('\n', ' ')  # Remove line breaks
-            content = content.replace('"', "'")  # Replace double quotes with single
+            # Common prefixes to remove
+            prefixes = [
+                "Here's a raw, technical tweet about",
+                "Here's a technical but accessible tweet about",
+                "Here's a tweet about",
+                "Writing a tweet about",
+                "Here is a tweet about",
+                "From the perspective of",
+                "Tweet:",
+                "Content:"
+            ]
             
-            # Only truncate if we're actually over the limit
-            if len(content) > 280:
-                logger.warning(f"Content exceeded limit ({len(content)} chars), truncating...")
-                content = content[:277] + "..."
+            # Remove any prefix that matches
+            tweet = content
+            for prefix in prefixes:
+                if tweet.lower().startswith(prefix.lower()):
+                    tweet = tweet[len(prefix):].strip()
             
-            logger.info(f"Generated tweet length: {len(content)} chars")
-            logger.info(f"Final tweet content: {content}")
-            return self.clean_tweet_content(content)
+            # Remove any remaining intro text before the actual tweet content
+            if ":" in tweet:
+                # Split only at the last colon if multiple exist
+                parts = tweet.rsplit(":", 1)
+                if len(parts) > 1:
+                    tweet = parts[1].strip()
+            
+            # Ensure we're within Twitter's character limit
+            if len(tweet) > 280:
+                logger.warning(f"Content exceeded limit ({len(tweet)} chars), truncating...")
+                tweet = tweet[:280]
+            
+            logger.info(f"Generated tweet length: {len(tweet)} chars")
+            logger.info(f"Final tweet content: {tweet}")
+            
+            return tweet
+            
         except Exception as e:
             logger.error(f"Failed to generate content: {str(e)}")
             raise
