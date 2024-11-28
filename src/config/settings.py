@@ -18,6 +18,11 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     ENVIRONMENT: str = "development"
     
+    # Add proxy settings with None defaults
+    HTTP_PROXY: str | None = None
+    HTTPS_PROXY: str | None = None
+    NO_PROXY: str | None = None
+    
     class Config:
         env_file = ".env"
 

@@ -81,20 +81,13 @@ class TweetScheduler:
             logger.info("=== Scheduler Triggered ===")
             logger.info("Attempting to post scheduled tweet...")
             
-            content_types = ["educational", "decentralized", "shitposting"]
-            current_time = datetime.now(pytz.timezone('America/Chicago'))
-            logger.info(f"Current time in CT: {current_time}")
-            hour = current_time.hour
-            
-            content_type = content_types[hour % len(content_types)]
-            logger.info(f"Selected content type: {content_type}")
-            
-            content = await self.content_generator.generate_tweet(content_type)
+            # Generate content without specifying type
+            content = await self.content_generator.generate_tweet()
             logger.info(f"Generated content: {content}")
             
             # Post to Twitter
             await self.twitter_bot.post_tweet(content)
-            logger.info(f"Tweet posted successfully - type: {content_type}")
+            logger.info("Tweet posted successfully")
             
         except Exception as e:
             if "Too Many Requests" in str(e):
