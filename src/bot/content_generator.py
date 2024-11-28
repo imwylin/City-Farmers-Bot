@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 class ContentGenerator:
     def __init__(self):
         self.settings = get_settings()
-        self.client = Anthropic(api_key=self.settings.ANTHROPIC_API_KEY)
+        self.client = Anthropic(api_key=self.settings.ANTHROPIC_API_KEY, base_url="https://api.anthropic.com")
         
     def _truncate_to_limit(self, tweet: str, limit: int = 280) -> str:
         """Truncate tweet to character limit at last complete word"""
@@ -40,7 +40,7 @@ class ContentGenerator:
             else:  # shitposting
                 prompt = "Write a complete tweet about Bubble Tech's full stack from the perspective of the ag tech shitposter. The tweet must be under 280 characters and should not be cut off mid-thought."
             
-            # Get response from Claude (synchronously)
+            # Get response from Claude using current API format
             message = self.client.messages.create(
                 model="claude-3-sonnet-20240229",
                 max_tokens=1024,
