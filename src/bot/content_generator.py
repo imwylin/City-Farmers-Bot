@@ -90,7 +90,7 @@ Keep tweets under 280 characters. Don't try to structure them or make them educa
            message = self.client.messages.create(
                model="claude-3-sonnet-20240229",
                max_tokens=1024,
-               temperature=0.75,  # Lowered from 0.9 for more balanced creativity
+               temperature=0.75,
                system=self.system,
                messages=[{
                    "role": "user",
