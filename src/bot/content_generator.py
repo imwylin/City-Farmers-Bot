@@ -1,13 +1,19 @@
 from anthropic import Anthropic
 from src.config.settings import get_settings
 import logging
+import httpx
 
 logger = logging.getLogger(__name__)
 
 class ContentGenerator:
    def __init__(self):
        self.settings = get_settings()
-       self.client = Anthropic(api_key=self.settings.ANTHROPIC_API_KEY)
+       # Create a custom HTTP client with no proxy
+       http_client = httpx.Client(proxies=None)
+       self.client = Anthropic(
+           api_key=self.settings.ANTHROPIC_API_KEY,
+           http_client=http_client
+       )
        self.system = """You're @CityFarmersBot, an urban farming tech enthusiast running experimental greenhouse systems.
 
 PERSONALITY & VOICE:
